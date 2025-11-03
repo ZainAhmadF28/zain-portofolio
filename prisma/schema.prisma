@@ -1,0 +1,200 @@
+// This is your Prisma schema file,// This is your Prisma schema file,
+
+// learn more about it in the docs: https://pris.ly/d/prisma-schema// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+
+
+generator client {// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+
+  provider = "prisma-client-js"// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+}
+
+generator client {
+
+datasource db {  provider = "prisma-client-js"
+
+  provider  = "postgresql"}
+
+  url       = env("DATABASE_URL")
+
+  directUrl = env("DIRECT_URL")datasource db {
+
+}  provider  = "postgresql"
+
+  url       = env("DATABASE_URL")
+
+model Admin {  directUrl = env("DIRECT_URL")
+
+  id       Int    @id @default(autoincrement())}
+
+  username String @unique
+
+  password Stringmodel Admin {
+
+    id       Int    @id @default(autoincrement())
+
+  createdAt DateTime @default(now())  username String @unique
+
+  updatedAt DateTime @updatedAt  password String
+
+    
+
+  @@map("admins")  createdAt DateTime @default(now())
+
+}  updatedAt DateTime @updatedAt
+
+  
+
+model ContactMessage {  @@map("admins")
+
+  id      Int    @id @default(autoincrement())}
+
+  name    String
+
+  email   Stringmodel ContactMessage {
+
+  message String @db.Text  id      Int    @id @default(autoincrement())
+
+  status  String @default("unread") // "unread" | "read"  name    String
+
+    email   String
+
+  createdAt DateTime @default(now())  message String @db.Text
+
+  updatedAt DateTime @updatedAt  status  String @default("unread") // "unread" | "read"
+
+    
+
+  @@map("contact_messages")  createdAt DateTime @default(now())
+
+}  updatedAt DateTime @updatedAt
+
+  
+
+model Comment {  @@map("contact_messages")
+
+  id        Int    @id @default(autoincrement())}
+
+  name      String
+
+  message   String @db.Textmodel Comment {
+
+  photo     String?  id        Int    @id @default(autoincrement())
+
+  likes     Int    @default(0)  name      String
+
+  isVisible Boolean @default(true)  message   String @db.Text
+
+    photo     String?
+
+  createdAt DateTime @default(now())  likes     Int    @default(0)
+
+  updatedAt DateTime @updatedAt  isVisible Boolean @default(true)
+
+    
+
+  replies CommentReply[]  createdAt DateTime @default(now())
+
+    updatedAt DateTime @updatedAt
+
+  @@map("comments")  
+
+}  replies CommentReply[]
+
+  
+
+model CommentReply {  @@map("comments")
+
+  id        Int    @id @default(autoincrement())}
+
+  commentId Int
+
+  name      Stringmodel CommentReply {
+
+  message   String @db.Text  id        Int    @id @default(autoincrement())
+
+  isAdmin   Boolean @default(false)  commentId Int
+
+    name      String
+
+  createdAt DateTime @default(now())  message   String @db.Text
+
+  updatedAt DateTime @updatedAt  isAdmin   Boolean @default(false)
+
+    
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)  createdAt DateTime @default(now())
+
+    updatedAt DateTime @updatedAt
+
+  @@map("comment_replies")  
+
+}  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  
+
+model Portfolio {  @@map("comment_replies")
+
+  id          Int    @id @default(autoincrement())}
+
+  title       String
+
+  description String @db.Textmodel Portfolio {
+
+  image       String?  id          Int    @id @default(autoincrement())
+
+  githubUrl   String?  title       String
+
+  liveUrl     String?  description String @db.Text
+
+  technologies String[] // Array of tech names  image       String?
+
+  category    String   // "web", "mobile", "desktop", etc.  githubUrl   String?
+
+  featured    Boolean  @default(false)  liveUrl     String?
+
+    technologies String[] // Array of tech names
+
+  createdAt DateTime @default(now())  category    String   // "web", "mobile", "desktop", etc.
+
+  updatedAt DateTime @updatedAt  featured    Boolean  @default(false)
+
+    
+
+  @@map("portfolios")  createdAt DateTime @default(now())
+
+}  updatedAt DateTime @updatedAt
+
+  
+
+model Certificate {  @@map("portfolios")
+
+  id          Int    @id @default(autoincrement())}
+
+  title       String
+
+  issuer      Stringmodel Certificate {
+
+  description String? @db.Text  id          Int    @id @default(autoincrement())
+
+  imageUrl    String?  title       String
+
+  pdfUrl      String?  issuer      String
+
+  issueDate   DateTime  description String? @db.Text
+
+    imageUrl    String?
+
+  createdAt DateTime @default(now())  pdfUrl      String?
+
+  updatedAt DateTime @updatedAt  issueDate   DateTime
+
+    
+
+  @@map("certificates")  createdAt DateTime @default(now())
+
+}  updatedAt DateTime @updatedAt
+  
+  @@map("certificates")
+}

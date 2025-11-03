@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "nama-proyek-anda",
   "private": true,
   "version": "0.0.0",
@@ -10,10 +11,30 @@
     "preview": "vite preview"
   },
   "dependencies": {
+=======
+  "name": "zain-portfolio-nextjs",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:studio": "npx prisma studio",
+    "db:seed": "node scripts/seed.js",
+    "vercel-build": "npx prisma generate && next build"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.1",
+>>>>>>> 149612e4d11739551c69e3fce2c79f5dbd2692e7
     "@react-three/drei": "^10.5.1",
     "@react-three/fiber": "^9.2.0",
     "@react-three/rapier": "^2.1.0",
     "@splinetool/react-spline": "^4.1.0",
+<<<<<<< HEAD
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.6",
     "gsap": "^3.13.0",
@@ -23,12 +44,30 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
+=======
+    "@splinetool/runtime": "^1.10.57",
+    "bcryptjs": "^3.0.2",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.2.2",
+    "framer-motion": "^12.23.6",
+    "gsap": "^3.13.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.525.0",
+    "meshline": "^3.3.1",
+    "motion": "^12.23.6",
+    "next": "^14.2.18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "sharp": "^0.34.3",
+>>>>>>> 149612e4d11739551c69e3fce2c79f5dbd2692e7
     "tailwind-merge": "^3.3.1",
     "three": "^0.167.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+<<<<<<< HEAD
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.45.0",
@@ -38,5 +77,13 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3",
     "vite": "^4.4.5"
+=======
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.45.0",
+    "eslint-config-next": "^14.2.18",
+    "postcss": "^8.4.31",
+    "prisma": "^6.16.1",
+    "tailwindcss": "^3.3.3"
+>>>>>>> 149612e4d11739551c69e3fce2c79f5dbd2692e7
   }
 }

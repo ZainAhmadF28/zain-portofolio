@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font kustom Anda */
+@font-face {
+    font-family: 'Moderniz';
+    src: url('./assets/fonts/Moderniz.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Bauhaus93';
+    src: url('./assets/fonts/BAUHS93.ttf') format('truetype');
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code&display=swap');
+
+@layer base {
+  body {
+    @apply bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text;
+  }
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .font-cascadia {
+    font-family: 'Cascadia Code', monospace;
+  }
+}
+
+/* Efek animasi dari CSS yang sudah ada */
+@layer utilities {
+  .lanyard-opacity-animation {
+    animation: lanyard-fade 3s ease-in-out infinite;
+  }
+
+  @keyframes lanyard-fade {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .neon-glow {
+    box-shadow: 
+      0 0 5px #00ffdc,
+      0 0 10px #00ffdc,
+      0 0 15px #00ffdc,
+      0 0 20px #00ffdc;
+  }
+
+  .neon-text {
+    text-shadow:
+      0 0 5px #00ffdc,
+      0 0 10px #00ffdc,
+      0 0 15px #00ffdc,
+      0 0 20px #00ffdc;
+  }
+
+  .moving-border {
+    position: relative;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 220, 0.4), transparent);
+    animation: moving-border 3s linear infinite;
+  }
+
+  @keyframes moving-border {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .grid-animation {
+    animation: grid-move 20s linear infinite;
+  }
+
+  @keyframes grid-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-50px, -50px); }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    from {
+      box-shadow: 0 0 5px #00ffdc, 0 0 10px #00ffdc, 0 0 15px #00ffdc;
+    }
+    to {
+      box-shadow: 0 0 10px #00ffdc, 0 0 20px #00ffdc, 0 0 30px #00ffdc;
+    }
+  }
+}
