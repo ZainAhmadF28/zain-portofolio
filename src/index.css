@@ -1,3 +1,7 @@
+/* Import Google Fonts PERTAMA - sebelum Tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,9 +16,6 @@
     font-family: 'Bauhaus93';
     src: url(./assets/fonts/BAUHS93.ttf) format('truetype');
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code&display=swap');
 
 @layer base {
   body {

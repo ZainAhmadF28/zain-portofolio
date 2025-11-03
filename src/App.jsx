@@ -25,8 +25,17 @@ import PerformanceStats from './components/PerformanceStats';
 // Lazy load komponen 3D yang berat
 
 function App() {
-  // 1. State untuk mengontrol visibilitas aset 3D (default: aktif)
-  const [is3dEnabled, setIs3dEnabled] = useState(true);
+  // 1. State untuk mengontrol visibilitas aset 3D
+  // Default: OFF di mobile untuk performa lebih baik, ON di desktop
+  const [is3dEnabled, setIs3dEnabled] = useState(() => {
+    // Detect mobile device
+    if (typeof window !== 'undefined') {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isSmallScreen = window.innerWidth < 1024;
+      return !isMobile && !isSmallScreen; // OFF di mobile, ON di desktop
+    }
+    return true; // Default ON untuk SSR
+  });
 
   // Fungsi untuk toggle state
   const toggle3dAssets = () => {
