@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "name": "Sample User",
+    "email": "sample@example.com",
+    "message": "Hello! I'd like to discuss a potential project collaboration.",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "status": "unread"
+  }
+]

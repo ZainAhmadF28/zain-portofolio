@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font kustom Anda */
+@font-face {
+    font-family: 'Moderniz';
+    src: url(./assets/fonts/Moderniz.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Bauhaus93';
+    src: url(./assets/fonts/BAUHS93.ttf) format('truetype');
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code&display=swap');
+
+@layer base {
+  body {
+    background-color: #060010; /* Menetapkan warna latar belakang default */
+  }
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .font-cascadia {
+    font-family: 'Cascadia Code', monospace;
+  }
+}
+
+/* --- Gaya untuk Latar Belakang Preloader --- */
+.bg-animated {
+  background: linear-gradient(120deg, #060010 0%, #0a1a2f 40%, #1b2b4b 100%);
+  background-size: 200% 200%;
+  animation: gradientMove 12s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+/* Gaya utilitas asli Anda */
+@layer utilities {
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes reveal {
+    from {
+      width: 0%;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s forwards;
+  }
+
+  .animate-reveal {
+    animation: reveal 2s linear forwards;
+  }
+}

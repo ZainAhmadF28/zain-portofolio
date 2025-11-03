@@ -1,0 +1,20 @@
+
+
+[
+  {
+    "id": 1,
+    "name": "Sample User",
+    "message": "Amazing portfolio! Love the design and animations.",
+    "photo": "https://ui-avatars.com/api/?name=Sample+User&background=00ffdc&color=000754&size=100",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "likes": 5
+  },
+  {
+    "id": 2,
+    "name": "John Doe",
+    "message": "Great work! The certificate preview feature is really innovative.",
+    "photo": "https://ui-avatars.com/api/?name=John+Doe&background=4079ff&color=ffffff&size=100",
+    "timestamp": "2024-01-14T14:20:00.000Z",
+    "likes": 3
+  }
+]
