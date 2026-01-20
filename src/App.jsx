@@ -1,5 +1,4 @@
-// src/App.jsx
-import React, { useState } from 'react'; // Impor useState
+import React, { useState } from 'react';
 import Header from './components/Header';
 import Squares from './components/Squares';
 import TextGenerateEffect from "./components/text-generate-effect";
@@ -9,40 +8,28 @@ import Lanyard from './components/Lanyard/Lanyard';
 import Skills from './components/Skills';
 import { ButtonMovingBorder } from './components/MovingBorderButton';
 import { motion } from "framer-motion";
-// Tambahkan FaCube untuk ikon tombol
 import { FaGithub, FaInstagram, FaLinkedin, FaDownload, FaBriefcase, FaCode, FaCertificate, FaGlobe, FaArrowRight, FaCube } from 'react-icons/fa';
-import ProfileCard from './components/ProfileCard/ProfileCard';
-import ZAINFIX from './assets/images/ZAINFIX.png';
-import { IconCloud } from './components/IconCloud';
 import Spline from '@splinetool/react-spline';
 import { VelocityScroll } from './components/VelocityScroll';
 import ProjectSection from './components/ProjectSection';
 import Contact from './components/Contact';
 import { NavbarProvider } from './contexts/NavbarContext';
 import { AdminProvider } from './contexts/AdminContext';
-import PerformanceStats from './components/PerformanceStats';
-
-// Lazy load komponen 3D yang berat
 
 function App() {
-  // 1. State untuk mengontrol visibilitas aset 3D
-  // Default: OFF di mobile untuk performa lebih baik, ON di desktop
   const [is3dEnabled, setIs3dEnabled] = useState(() => {
-    // Detect mobile device
     if (typeof window !== 'undefined') {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const isSmallScreen = window.innerWidth < 1024;
-      return !isMobile && !isSmallScreen; // OFF di mobile, ON di desktop
+      return !isMobile && !isSmallScreen;
     }
-    return true; // Default ON untuk SSR
+    return true;
   });
 
-  // Fungsi untuk toggle state
   const toggle3dAssets = () => {
     setIs3dEnabled(prev => !prev);
   };
 
-  // Data untuk card statistik
   const stats = [
     { icon: <FaCode />, value: "13", title: "TOTAL PROJECTS", description: "Innovative web solutions crafted" },
     { icon: <FaCertificate />, value: "13", title: "CERTIFICATES", description: "Professional skills validated" },
@@ -53,15 +40,10 @@ function App() {
     <AdminProvider>
       <NavbarProvider>
         <div className="relative min-h-screen bg-[#060010] overflow-hidden">
-          {/* Performance Stats (Development Only) */}
-          <PerformanceStats />
-          
-          {/* LAPISAN 1: BACKGROUND ANIMASI */}
           <div className="absolute inset-0 z-0">
             <Squares speed={0.3} squareSize={35} direction="diagonal" borderColor="rgba(255, 255, 255, 0.03)" hoverFillColor="rgba(31, 137, 187, 0.53)" />
           </div>
           
-          {/* 2. Tombol untuk mengaktifkan/menonaktifkan aset 3D */}
           <button
             onClick={toggle3dAssets}
             title={`Toggle 3D Assets (${is3dEnabled ? 'On' : 'Off'})`}
@@ -74,16 +56,11 @@ function App() {
             <FaCube className="h-5 w-5" />
           </button>
 
-          {/* HEADER FIXED DI ATAS MAIN */}
           <Header />
 
-          {/* MAIN CONTENT */}
           <main className="relative z-10 px-8 max-w-7xl mx-auto">
-            {/* BAGIAN HERO */}
             <section id="home" className="flex flex-col md:flex-row items-center gap-10 pt-20 pb-16 lg:pt-0 lg:pb-20">
-              {/* Blok Teks */}
               <div className="flex-1 text-white space-y-6 pt-16 md:pt-40 order-last md:order-none">
-                {/* ... konten teks hero ... */}
                 <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}>
                     <AnimatedGradientTextDemo />
                 </motion.div>
@@ -121,13 +98,11 @@ function App() {
               </div>
             </section>
 
-            {/* BAGIAN ABOUT ME BARU */}
             <section
               id="about"
               className="py-12 md:py-18 gap-0 w-full mx-0 pt-20"
               style={{ width: "100vw", position: "relative", left: "50%", right: "50%", marginLeft: "-50vw", marginRight: "-50vw" }}
             >
-              {/* ... Judul "ABOUT ME" ... */}
               <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.8, ease: "easeOut" }} className="text-center">
                     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden mb-20">
                         <VelocityScroll defaultVelocity={3} numRows={1} className="max-w-full">
@@ -149,7 +124,6 @@ function App() {
                 </motion.div>
 
               <div className="flex flex-col md:flex-row items-center justify-center">
-                {/* 3. Render Spline secara kondisional */}
                 {is3dEnabled && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -164,14 +138,11 @@ function App() {
                   </motion.div>
                 )}
 
-                {/* KANAN: Teks & Tombol */}
-                {/* 4. Sesuaikan lebar kolom teks secara dinamis */}
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.9, ease: "easeOut" }}
-                  // Lebar berubah jika 3D dinonaktifkan
                   className={`text-white text-center md:text-left px-4 md:px-8 transition-all duration-700 ${is3dEnabled ? 'md:w-1/2' : 'md:w-2/3'}`}
                 >
                   <p className="text-2xl text-gray-300 font-moderniz my" style={{ textShadow: "2px 2px 0 #000754, 4px 4px 0 #4079ff, 0 4px 12px #40ffaa, 0 1px 0 #00ffdc" }}>Hello, I'm</p>
@@ -193,7 +164,6 @@ function App() {
                 </motion.div>
               </div>
               
-              {/* ... Statistik ... */}
               <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mt-10 px-4 md:px-0">
                 {stats.map((stat, index) => (
                   <div key={index} className="group relative p-6 rounded-2xl bg-gradient-to-br from-slate-900/80 to-slate-950/70 border border-slate-800/80 shadow-lg transition-all duration-300 hover:border-cyan-400/50 hover:shadow-[0_0_24px_0px_#00ffdc50] cursor-pointer">
@@ -215,18 +185,15 @@ function App() {
               </motion.div>
             </section>
 
-            {/* BAGIAN PROJECTS */}
             <section id="projects" className="md:py-18">
               <ProjectSection />
             </section>
 
-            {/* BAGIAN CONTACT */}
-            <section id="contact" className="py-20">
+            <section id="contact" className="py-20 pb-16">
               <Contact />
             </section>
 
-            {/* FOOTER */}
-            <footer className="py-8 text-center text-gray-400">
+            <footer className="py-12 pb-16 text-center text-gray-400 bg-gradient-to-t from-slate-900/50 to-transparent">
               <div className="text-sm">© {new Date().getFullYear()} Zain Ahmad Fahrezi. All rights reserved.</div>
               <div className="text-xs mt-2">Built with <span className="text-red-500">♥</span> using React, Tailwind CSS, and Framer Motion.</div>
             </footer>

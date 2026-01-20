@@ -52,6 +52,12 @@ const AdminDashboard = ({ isOpen, onClose }) => {
     image_url: ''
   });
 
+  // File upload states
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [projectImageFile, setProjectImageFile] = useState(null);
+  const [certificateImageFile, setCertificateImageFile] = useState(null);
+  const [certificatePdfFile, setCertificatePdfFile] = useState(null);
+
   useEffect(() => {
     if (isOpen) {
       fetchData();
@@ -120,6 +126,113 @@ const AdminDashboard = ({ isOpen, onClose }) => {
       .order('created_at', { ascending: false }); // Then by date
     if (data) setComments(data);
     if (error) console.error('Error fetching comments:', error);
+  };
+
+  // FILE UPLOAD Functions
+  const uploadFile = async (file, bucket, folder = '') => {
+    try {
+      setUploadingFile(true);
+      
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${folder}${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(fileName);
+
+      setUploadingFile(false);
+      return publicUrl;
+    } catch (error) {
+      setUploadingFile(false);
+      console.error('Error uploading file:', error);
+      throw error;
+    }
+  };
+
+  const handleProjectImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setProjectImageFile(file);
+      const imageUrl = await uploadFile(file, 'project-images', 'projects/');
+      setProjectForm(prev => ({ ...prev, image_url: imageUrl }));
+      alert('Image uploaded successfully!');
+    } catch (error) {
+      alert('Failed to upload image: ' + error.message);
+    }
+  };
+
+  const handleCertificateImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setCertificateImageFile(file);
+      const imageUrl = await uploadFile(file, 'certificate-images', 'certificates/');
+      setCertificateForm(prev => ({ ...prev, image_url: imageUrl }));
+      alert('Certificate image uploaded successfully!');
+    } catch (error) {
+      alert('Failed to upload certificate image: ' + error.message);
+    }
+  };
+
+  const handleCertificatePdfUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      alert('Please upload a PDF file');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('PDF size should be less than 10MB');
+      return;
+    }
+
+    try {
+      setCertificatePdfFile(file);
+      const pdfUrl = await uploadFile(file, 'certificates', 'pdfs/');
+      setCertificateForm(prev => ({ ...prev, credential_url: pdfUrl }));
+      alert('Certificate PDF uploaded successfully!');
+    } catch (error) {
+      alert('Failed to upload PDF: ' + error.message);
+    }
   };
 
   // CREATE Operations
@@ -490,14 +603,22 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                             />
                           </div>
                           <div>
-                            <label className="block text-slate-400 mb-2">Image URL *</label>
-                            <input
-                              type="text"
-                              value={projectForm.image_url}
-                              onChange={(e) => setProjectForm({ ...projectForm, image_url: e.target.value })}
-                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-                              placeholder="https://..."
-                            />
+                            <label className="block text-slate-400 mb-2">Project Image *</label>
+                            <div className="space-y-2">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleProjectImageUpload}
+                                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 file:cursor-pointer focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                              />
+                              {projectForm.image_url && (
+                                <div className="flex items-center gap-2">
+                                  <img src={projectForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded-lg border border-slate-600" />
+                                  <span className="text-sm text-slate-400 break-all">{projectForm.image_url}</span>
+                                </div>
+                              )}
+                              {uploadingFile && <p className="text-sm text-cyan-400">Uploading...</p>}
+                            </div>
                           </div>
                           <div>
                             <label className="block text-slate-400 mb-2">Demo URL</label>
@@ -672,24 +793,41 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                             />
                           </div>
                           <div>
-                            <label className="block text-slate-400 mb-2">Credential URL</label>
-                            <input
-                              type="text"
-                              value={certificateForm.credential_url}
-                              onChange={(e) => setCertificateForm({ ...certificateForm, credential_url: e.target.value })}
-                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-                              placeholder="https://..."
-                            />
+                            <label className="block text-slate-400 mb-2">Certificate PDF</label>
+                            <div className="space-y-2">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={handleCertificatePdfUpload}
+                                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 file:cursor-pointer focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                              />
+                              {certificateForm.credential_url && (
+                                <div className="flex items-center gap-2">
+                                  <a href={certificateForm.credential_url} target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:underline break-all">
+                                    📄 {certificateForm.credential_url}
+                                  </a>
+                                </div>
+                              )}
+                              {uploadingFile && <p className="text-sm text-cyan-400">Uploading PDF...</p>}
+                            </div>
                           </div>
                           <div className="md:col-span-2">
-                            <label className="block text-slate-400 mb-2">Image URL</label>
-                            <input
-                              type="text"
-                              value={certificateForm.image_url}
-                              onChange={(e) => setCertificateForm({ ...certificateForm, image_url: e.target.value })}
-                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-                              placeholder="https://..."
-                            />
+                            <label className="block text-slate-400 mb-2">Certificate Image (Preview)</label>
+                            <div className="space-y-2">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleCertificateImageUpload}
+                                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 file:cursor-pointer focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                              />
+                              {certificateForm.image_url && (
+                                <div className="flex items-center gap-2">
+                                  <img src={certificateForm.image_url} alt="Preview" className="w-32 h-20 object-cover rounded-lg border border-slate-600" />
+                                  <span className="text-sm text-slate-400 break-all">{certificateForm.image_url}</span>
+                                </div>
+                              )}
+                              {uploadingFile && <p className="text-sm text-cyan-400">Uploading image...</p>}
+                            </div>
                           </div>
                         </div>
                         <div className="flex gap-4 mt-6">

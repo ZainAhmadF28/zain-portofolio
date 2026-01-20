@@ -242,7 +242,7 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 px-4 relative overflow-hidden">
+    <section id="contact" className="py-20 px-4 pb-32 relative overflow-hidden min-h-screen">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 via-transparent to-cyan-900/10"></div>
       

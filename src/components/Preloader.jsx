@@ -1,19 +1,15 @@
-// src/components/Preloader.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, Linkedin, Instagram } from 'lucide-react';
-import DotGrid from './DotGrid';
 import Spline from '@splinetool/react-spline';
 
 const Preloader = ({ onFinished }) => {
   const [typedText, setTypedText] = useState('');
   const [showContent, setShowContent] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  // 1. State baru untuk melacak status loading Spline
   const [isAssetLoaded, setIsAssetLoaded] = useState(false);
   const fullText = "www.zainahmadfahrezi.com";
 
-  // 2. Fungsi yang akan dipanggil saat Spline selesai dimuat
   const handleAssetLoad = () => {
     setIsAssetLoaded(true);
   };
@@ -25,26 +21,21 @@ const Preloader = ({ onFinished }) => {
     return () => clearTimeout(initialTimer);
   }, []);
 
-  // 3. Modifikasi efek utama untuk memeriksa status loading aset
   useEffect(() => {
     if (showContent) {
-      // Logika animasi mengetik (tidak berubah)
       if (typedText.length < fullText.length) {
         const typingTimer = setTimeout(() => {
           setTypedText(fullText.slice(0, typedText.length + 1));
         }, 120);
         return () => clearTimeout(typingTimer);
-      } 
-      // KONDISI BARU: transisi keluar hanya jika teks selesai diketik DAN aset sudah dimuat
-      else if (typedText.length === fullText.length && isAssetLoaded) {
+      } else if (typedText.length === fullText.length && isAssetLoaded) {
         const exitTimer = setTimeout(() => {
           setFadeOut(true);
-          setTimeout(onFinished, 1000); // Tunggu animasi fade-out
-        }, 1500); // Jeda setelah semua selesai
+          setTimeout(onFinished, 1000);
+        }, 1500);
         return () => clearTimeout(exitTimer);
       }
     }
-    // Tambahkan isAssetLoaded ke dependency array
   }, [typedText, showContent, fullText, onFinished, isAssetLoaded]);
 
   return (
@@ -58,8 +49,6 @@ const Preloader = ({ onFinished }) => {
           }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center text-white bg-[#060010]"
         >
-          <DotGrid />
-          
           {showContent && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -68,7 +57,6 @@ const Preloader = ({ onFinished }) => {
             >
               <div className="flex justify-center mb-2 mt-[-24px] md:mt-[-32px]">
                 <div className="w-[320px] h-[180px] md:w-[480px] md:h-[260px]">
-                  {/* 4. Tambahkan prop onLoad ke komponen Spline */}
                   <Spline 
                     scene="https://prod.spline.design/FcZ66SFMX1YbF-0I/scene.splinecode" 
                     onLoad={handleAssetLoad}
