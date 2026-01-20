@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaGithub, 
-  FaInstagram, 
-  FaTiktok, 
-  FaPaperPlane, 
-  FaUser, 
-  FaEnvelope, 
-  FaComment, 
+import {
+  FaGithub,
+  FaInstagram,
+  FaTiktok,
+  FaPaperPlane,
+  FaUser,
+  FaEnvelope,
+  FaComment,
   FaCamera,
   FaHeart,
   FaReply,
@@ -59,7 +59,7 @@ const Contact = () => {
         .order('created_at', { ascending: false }); // Then by date
 
       if (error) throw error;
-      
+
       if (data) {
         console.log('✅ Comments fetched from database:', data.length);
         // Transform data dari Supabase ke format yang dipakai component
@@ -88,7 +88,7 @@ const Contact = () => {
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     setIsSubmittingContact(true);
-    
+
     try {
       // Save message to Supabase
       const { data, error } = await supabase
@@ -112,7 +112,7 @@ const Contact = () => {
 
       alert('Pesan berhasil dikirim! Terima kasih telah menghubungi saya. 📧');
       setContactForm({ name: '', email: '', message: '' });
-      
+
     } catch (error) {
       console.error('Error submitting contact form:', error);
       alert(`Gagal mengirim pesan: ${error.message}. Pastikan koneksi database aktif.`);
@@ -167,13 +167,13 @@ const Contact = () => {
 
       // Refresh comments list dari database
       await fetchComments();
-      
+
       // Reset form
       setCommentForm({ name: '', message: '', photo: null, photoPreview: null });
-      
+
       // Show success message
       alert('Comment berhasil dipost! 🎉');
-      
+
     } catch (error) {
       console.error('Error submitting comment:', error);
       alert(`Gagal posting comment: ${error.message}. Pastikan koneksi database aktif.`);
@@ -203,13 +203,13 @@ const Contact = () => {
       console.log('Like updated in database');
 
       // Update local state untuk tampilan langsung
-      const updatedComments = comments.map(c => 
-        c.id === commentId 
+      const updatedComments = comments.map(c =>
+        c.id === commentId
           ? { ...c, likes: c.likes + 1 }
           : c
       );
       setComments(updatedComments);
-      
+
     } catch (error) {
       console.error('Error liking comment:', error);
       alert(`Gagal like comment: ${error.message}`);
@@ -245,7 +245,7 @@ const Contact = () => {
     <section id="contact" className="py-20 px-4 pb-32 relative overflow-hidden min-h-screen">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 via-transparent to-cyan-900/10"></div>
-      
+
       {/* Floating Elements */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-cyan-500/10 rounded-full blur-xl animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
@@ -270,7 +270,7 @@ const Contact = () => {
           <p className="text-xl text-slate-400 font-cascadia">
             Mari berkolaborasi dan ciptakan sesuatu yang amazing!
           </p>
-          
+
           {/* Admin Button - positioned top right */}
           <button
             onClick={() => {
@@ -508,73 +508,77 @@ const Contact = () => {
                 <FaComment className="text-cyan-400" />
                 Comments ({comments.length})
               </h4>
-              
-              <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
-                <AnimatePresence>
-                  {comments.map((comment, index) => (
-                    <motion.div
-                      key={comment.id}
-                      initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9, x: -100 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className={`group relative backdrop-blur-sm rounded-2xl p-6 border transition-all duration-300 ${
-                        comment.isPinned 
-                          ? 'bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-400/50 shadow-lg shadow-cyan-500/10' 
-                          : 'bg-slate-800/50 border-slate-700/30 hover:border-cyan-400/30'
-                      }`}
-                    >
-                      {/* 📌 Pin Indicator */}
-                      {comment.isPinned && (
-                        <div className="absolute top-3 right-3 flex items-center gap-2 bg-cyan-500/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-cyan-400/30">
-                          <FaThumbtack className="w-4 h-4 text-cyan-400" />
-                          <span className="text-xs font-semibold text-cyan-300">Pinned</span>
-                        </div>
-                      )}
-                      
-                      <div className="flex gap-4">
-                        <img 
-                          src={comment.photo} 
-                          alt={comment.name}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h5 className="font-semibold text-white">{comment.name}</h5>
-                              <p className="text-xs text-slate-400">
-                                {new Date(comment.timestamp).toLocaleDateString('id-ID', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
+
+              <div className="relative">
+                <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pb-20 pr-2">
+                  <AnimatePresence>
+                    {comments.map((comment, index) => (
+                      <motion.div
+                        key={comment.id}
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9, x: -100 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className={`group relative backdrop-blur-sm rounded-2xl p-6 border transition-all duration-300 ${comment.isPinned
+                            ? 'bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-400/50 shadow-lg shadow-cyan-500/10'
+                            : 'bg-slate-800/50 border-slate-700/30 hover:border-cyan-400/30'
+                          }`}
+                      >
+                        {/* 📌 Pin Indicator */}
+                        {comment.isPinned && (
+                          <div className="absolute top-3 right-3 flex items-center gap-2 bg-cyan-500/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-cyan-400/30">
+                            <FaThumbtack className="w-4 h-4 text-cyan-400" />
+                            <span className="text-xs font-semibold text-cyan-300">Pinned</span>
+                          </div>
+                        )}
+
+                        <div className="flex gap-4">
+                          <img
+                            src={comment.photo}
+                            alt={comment.name}
+                            className="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h5 className="font-semibold text-white">{comment.name}</h5>
+                                <p className="text-xs text-slate-400">
+                                  {new Date(comment.timestamp).toLocaleDateString('id-ID', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-slate-300 mt-2 leading-relaxed">{comment.message}</p>
+                            <div className="flex items-center gap-4 mt-4">
+                              <button
+                                onClick={() => handleLikeComment(comment.id)}
+                                className="flex items-center gap-2 text-slate-400 hover:text-red-400 transition-colors duration-300 group/like"
+                              >
+                                <FaHeart className="group-hover/like:scale-110 transition-transform duration-300" />
+                                <span className="text-sm">{comment.likes}</span>
+                              </button>
                             </div>
                           </div>
-                          <p className="text-slate-300 mt-2 leading-relaxed">{comment.message}</p>
-                          <div className="flex items-center gap-4 mt-4">
-                            <button
-                              onClick={() => handleLikeComment(comment.id)}
-                              className="flex items-center gap-2 text-slate-400 hover:text-red-400 transition-colors duration-300 group/like"
-                            >
-                              <FaHeart className="group-hover/like:scale-110 transition-transform duration-300" />
-                              <span className="text-sm">{comment.likes}</span>
-                            </button>
-                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-                
-                {comments.length === 0 && (
-                  <div className="text-center py-12 text-slate-400">
-                    <FaComment className="text-4xl mx-auto mb-4 opacity-50" />
-                    <p>Belum ada komentar. Jadilah yang pertama!</p>
-                  </div>
-                )}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+
+                  {comments.length === 0 && (
+                    <div className="text-center py-12 text-slate-400">
+                      <FaComment className="text-4xl mx-auto mb-4 opacity-50" />
+                      <p>Belum ada komentar. Jadilah yang pertama!</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* ✨ Gradient Fade Effect */}
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/60 to-transparent pointer-events-none z-10" />
               </div>
             </div>
           </motion.div>
@@ -584,7 +588,7 @@ const Contact = () => {
       {/* Admin Dashboard Modal */}
       <AnimatePresence>
         {isAdminOpen && (
-          <AdminDashboard 
+          <AdminDashboard
             isOpen={isAdminOpen}
             onClose={() => setIsAdminOpen(false)}
           />
