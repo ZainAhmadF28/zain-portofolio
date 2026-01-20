@@ -47,7 +47,7 @@ const Preloader = ({ onFinished }) => {
             filter: 'blur(10px)',
             transition: { duration: 1, ease: 'easeInOut' }
           }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center text-white bg-[#060010]"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center dark:text-white text-slate-800 dark:bg-[#060010] bg-zinc-50"
         >
           {showContent && (
             <motion.div
@@ -57,8 +57,8 @@ const Preloader = ({ onFinished }) => {
             >
               <div className="flex justify-center mb-2 mt-[-24px] md:mt-[-32px]">
                 <div className="w-[320px] h-[180px] md:w-[480px] md:h-[260px]">
-                  <Spline 
-                    scene="https://prod.spline.design/FcZ66SFMX1YbF-0I/scene.splinecode" 
+                  <Spline
+                    scene="https://prod.spline.design/FcZ66SFMX1YbF-0I/scene.splinecode"
                     onLoad={handleAssetLoad}
                   />
                 </div>
@@ -73,7 +73,7 @@ const Preloader = ({ onFinished }) => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, transition: { duration: 0.8, delay: 0.5 } }}
-                className="font-cascadia text-lg md:text-xl text-gray-400 mb-8 break-all"
+                className="font-cascadia text-lg md:text-xl dark:text-gray-400 text-slate-500 mb-8 break-all"
               >
                 <span>{typedText}</span>
                 <span className="animate-blink">|</span>
@@ -83,13 +83,13 @@ const Preloader = ({ onFinished }) => {
                 animate={{ opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.8 } }}
                 className="flex justify-center gap-6"
               >
-                <a href="https://github.com/zainahmadf28" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ffdc] transition-all duration-300 transform hover:scale-110">
+                <a href="https://github.com/zainahmadf28" target="_blank" rel="noopener noreferrer" className="dark:hover:text-[#00ffdc] hover:text-cyan-600 transition-all duration-300 transform hover:scale-110">
                   <Github size={32} />
                 </a>
-                <a href="https://www.linkedin.com/in/zain-ahmad-fahrezi-7a8a912a7/" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ffdc] transition-all duration-300 transform hover:scale-110">
+                <a href="https://www.linkedin.com/in/zain-ahmad-fahrezi-7a8a912a7/" target="_blank" rel="noopener noreferrer" className="dark:hover:text-[#00ffdc] hover:text-cyan-600 transition-all duration-300 transform hover:scale-110">
                   <Linkedin size={32} />
                 </a>
-                <a href="https://www.instagram.com/zainahmadf" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ffdc] transition-all duration-300 transform hover:scale-110">
+                <a href="https://www.instagram.com/zainahmadf" target="_blank" rel="noopener noreferrer" className="dark:hover:text-[#00ffdc] hover:text-cyan-600 transition-all duration-300 transform hover:scale-110">
                   <Instagram size={32} />
                 </a>
               </motion.div>

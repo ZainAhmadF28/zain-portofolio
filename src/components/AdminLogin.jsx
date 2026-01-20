@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaLock, 
-  FaUser, 
-  FaEye, 
-  FaEyeSlash, 
+import {
+  FaLock,
+  FaUser,
+  FaEye,
+  FaEyeSlash,
   FaShieldAlt,
   FaTimes,
   FaExclamationTriangle,
@@ -30,7 +30,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
       const updateTimer = () => {
         const remaining = Math.max(0, Math.ceil((lockoutTime - new Date().getTime()) / 1000));
         setLockoutTimer(remaining);
-        
+
         if (remaining <= 0) {
           setLockoutTimer(0);
           setError('');
@@ -75,7 +75,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[9999] p-4"
+      className="fixed inset-0 dark:bg-black/80 bg-slate-900/30 backdrop-blur-md flex items-center justify-center z-[9999] p-4"
       onClick={handleClose}
     >
       <motion.div
@@ -83,13 +83,13 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="relative max-w-md w-full bg-slate-900/95 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden"
+        className="relative max-w-md w-full dark:bg-slate-900/95 bg-white backdrop-blur-xl rounded-3xl border dark:border-white/10 border-slate-200 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="relative p-8 text-center">
           <div className="absolute top-4 right-4">
-            <button 
+            <button
               onClick={handleClose}
               className="bg-red-500/20 hover:bg-red-500/30 backdrop-blur-md p-2 rounded-full border border-red-400/30 transition-all duration-300 group"
             >
@@ -102,9 +102,9 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
               <FaShieldAlt className="text-white text-3xl" />
             </div>
           </div>
-          
-          <h2 className="text-2xl font-bold text-white mb-2">Admin Login</h2>
-          <p className="text-slate-400">Enter your credentials to access admin panel</p>
+
+          <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-2">Admin Login</h2>
+          <p className="dark:text-slate-400 text-slate-600">Enter your credentials to access admin panel</p>
         </div>
 
         {/* Login Form */}
@@ -120,7 +120,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
                   value={formData.username}
                   onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                   disabled={isLocked}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full pl-12 pr-4 py-4 dark:bg-slate-800/50 bg-slate-50 border dark:border-slate-600/50 border-slate-200 rounded-xl dark:text-white text-slate-900 dark:placeholder-slate-400 placeholder-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   required
                 />
               </div>
@@ -136,7 +136,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   disabled={isLocked}
-                  className="w-full pl-12 pr-12 py-4 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full pl-12 pr-12 py-4 dark:bg-slate-800/50 bg-slate-50 border dark:border-slate-600/50 border-slate-200 rounded-xl dark:text-white text-slate-900 dark:placeholder-slate-400 placeholder-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   required
                 />
                 <button
@@ -219,8 +219,8 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
           </form>
 
           {/* Security Notice */}
-          <div className="mt-6 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30">
-            <p className="text-slate-400 text-xs text-center">
+          <div className="mt-6 p-4 dark:bg-slate-800/30 bg-slate-100/80 rounded-xl border dark:border-slate-700/30 border-slate-200">
+            <p className="dark:text-slate-400 text-slate-500 text-xs text-center">
               🔒 Secure admin access - Sessions expire after 30 minutes
             </p>
           </div>

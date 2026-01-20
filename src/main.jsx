@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Preloader from './components/Preloader.jsx';
 import './index.css';
 
@@ -25,6 +26,8 @@ const Main = () => {
 // Render komponen Main ke dalam DOM
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Main />
+    <ThemeProvider>
+      <Main />
+    </ThemeProvider>
   </React.StrictMode>,
 );

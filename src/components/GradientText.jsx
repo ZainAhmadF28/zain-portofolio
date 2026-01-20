@@ -70,7 +70,7 @@ export default function LoopingGradientText({
 
         {/* Kursor mengetik */}
         <span
-          className="ml-1 inline-block h-5 w-0.5 animate-blink bg-white"
+          className="ml-1 inline-block h-5 w-0.5 animate-blink dark:bg-white bg-slate-800"
           style={{ height: "1.25em", verticalAlign: "bottom" }}
         />
       </div>

@@ -18,8 +18,31 @@
 }
 
 @layer base {
+  /* --- CSS VARIABLES FOR THEME --- */
+  :root {
+    --bg-primary: #ffffff; /* Light Mode Background */
+    --text-primary: #0f172a; /* Light Mode Text (Slate-950) */
+    --text-secondary: #475569; /* Light Mode Text Secondary (Slate-600) */
+    --card-bg: #f8fafc; /* Light Mode Card (Slate-50) */
+    --card-border: #e2e8f0; /* Light Mode Border (Slate-200) */
+    --accent: #06b6d4; /* Cyan-500 */
+    --accent-glow: rgba(6, 182, 212, 0.5);
+  }
+
+  /* DARK MODE OVERRIDES */
+  .dark {
+    --bg-primary: #060010; /* Original Dark Background */
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8; /* Slate-400 */
+    --card-bg: rgba(15, 23, 42, 0.6); /* Slate-900 with opacity */
+    --card-border: rgba(255, 255, 255, 0.1);
+    --accent: #00ffdc; /* Original Cyan Accent */
+  }
+
   body {
-    background-color: #060010; /* Menetapkan warna latar belakang default */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   .font-poppins {
     font-family: 'Poppins', sans-serif;

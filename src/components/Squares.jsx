@@ -6,6 +6,8 @@ const Squares = ({
   borderColor = "rgba(255, 255, 255, 0.1)",
   squareSize = 40,
   hoverFillColor = "rgba(255, 255, 255, 0.05)",
+  gradientColorStart = "#000428",
+  gradientColorEnd = "#002545ff"
 }) => {
   const canvasRef = useRef(null);
   const requestRef = useRef(null);
@@ -14,6 +16,20 @@ const Squares = ({
   const timeRef = useRef(0);
   const lastFrameTime = useRef(0);
   const [isActive, setIsActive] = useState(true);
+
+  // Refs untuk nilai props agar bisa diakses di dalam loop tanpa restart effect
+  const gradientStartRef = useRef(gradientColorStart);
+  const gradientEndRef = useRef(gradientColorEnd);
+  const hoverFillRef = useRef(hoverFillColor);
+  const borderRef = useRef(borderColor);
+
+  // Update refs saat props berubah
+  useEffect(() => {
+    gradientStartRef.current = gradientColorStart;
+    gradientEndRef.current = gradientColorEnd;
+    hoverFillRef.current = hoverFillColor;
+    borderRef.current = borderColor;
+  }, [gradientColorStart, gradientColorEnd, hoverFillColor, borderColor]);
 
   // Pause animation saat tab tidak terlihat
   useEffect(() => {
@@ -26,7 +42,7 @@ const Squares = ({
 
   useEffect(() => {
     if (!isActive) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: true, willReadFrequently: false });
@@ -45,8 +61,7 @@ const Squares = ({
       // Throttle ke 30 FPS
       const elapsed = timestamp - lastFrameTime.current;
       if (elapsed < 33) { // ~30fps
-        requestRef.current = requestAnimationFrame(draw);
-        return;
+        return; // Just return, let the main loop handle the next frame
       }
       lastFrameTime.current = timestamp - (elapsed % 33);
 
@@ -63,8 +78,9 @@ const Squares = ({
       const y2 = canvas.height / 2 - Math.sin(angle) * r;
 
       const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-      gradient.addColorStop(0, "#000428");
-      gradient.addColorStop(1, "#002545ff");
+      // Gunakan ref.current untuk warna dinamis
+      gradient.addColorStop(0, gradientStartRef.current);
+      gradient.addColorStop(1, gradientEndRef.current);
 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -82,17 +98,19 @@ const Squares = ({
             Math.floor((x - startX) / squareSize) === hoveredSquareRef.current.x &&
             Math.floor((y - startY) / squareSize) === hoveredSquareRef.current.y
           ) {
-            ctx.fillStyle = hoverFillColor;
+            ctx.fillStyle = hoverFillRef.current;
             ctx.fillRect(squareX, squareY, squareSize, squareSize);
           }
 
-          ctx.strokeStyle = borderColor;
+          ctx.strokeStyle = borderRef.current;
           ctx.strokeRect(squareX, squareY, squareSize, squareSize);
         }
       }
     };
 
     const updateAnimation = (timestamp) => {
+      if (!isActive) return; // Stop if not active
+
       const effectiveSpeed = Math.max(speed, 0.1);
       switch (direction) {
         case "right":
@@ -167,7 +185,7 @@ const Squares = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseout", handleMouseLeave);
     };
-  }, [direction, speed, borderColor, hoverFillColor, squareSize, isActive]);
+  }, [direction, speed, squareSize, isActive]); // Colors removed from dependencies
 
   return (
     <canvas

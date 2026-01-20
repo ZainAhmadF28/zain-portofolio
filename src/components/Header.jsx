@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { FaShieldAlt } from 'react-icons/fa';
+import { FaShieldAlt, FaSun, FaMoon } from 'react-icons/fa';
 import bangzenLogo from '../assets/images/BGZENBGIJObulat.png';
 import { useNavbar } from '../contexts/NavbarContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { useAdmin } from '../contexts/AdminContext';
 import AdminLogin from './AdminLogin';
 import AdminMessages from './AdminMessages';
@@ -17,13 +18,15 @@ const Header = () => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [adminView, setAdminView] = useState('messages'); // 'messages' or 'comments'
-  
+
+
   const { isNavbarVisible, hideNavbar, showNavbar } = useNavbar();
   const { isAuthenticated, logout } = useAdmin();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
+      setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -65,10 +68,10 @@ const Header = () => {
     <li>
       <a
         href={href}
-        className="relative block text-white font-[Rubik] font-bold text-base tracking-wider py-2 transition-transform duration-300 hover:scale-110 group"
+        className="relative block dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider py-2 transition-transform duration-300 hover:scale-110 group"
       >
         {children}
-        <span className="absolute bottom-1 left-0 block h-[2px] w-0 bg-[#00ffdc] transition-all duration-500 group-hover:w-full"></span>
+        <span className="absolute bottom-1 left-0 block h-[2px] w-0 dark:bg-[#00ffdc] bg-cyan-600 transition-all duration-500 group-hover:w-full"></span>
       </a>
     </li>
   );
@@ -84,62 +87,73 @@ const Header = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="fixed top-0 left-0 w-full z-50 pointer-events-none"
           >
-            {/* Drop Shadow Gradient Animated */}
-            {!isScrolled && (
+            {/* Drop Shadow Gradient Animated - Dark Mode */}
+            {theme === 'dark' && (
               <div
-                className="pointer-events-none absolute left-0 right-0 z-10"
+                className="pointer-events-none absolute left-0 right-0 z-10 transition-opacity duration-500"
                 style={{
                   top: '0',
-                  height: '90px',
-                  WebkitClipPath: CLIP_PATH,
-                  clipPath: CLIP_PATH,
+                  height: '100px',
+                  WebkitClipPath: isMenuOpen ? 'none' : CLIP_PATH,
+                  clipPath: isMenuOpen ? 'none' : CLIP_PATH,
                   background: 'linear-gradient(90deg, #00fff0, #00ffdc, #4079ff, #40ffaa, #00fff0)',
                   backgroundSize: '300% 100%',
                   animation: 'gradientShadowMove 6s linear infinite',
-                  opacity: 1,
+                  opacity: isScrolled ? 0 : 1,
                   filter: 'drop-shadow(0 16px 24px rgba(64,255,170,0.35))',
+                }}
+              ></div>
+            )}
+
+            {/* Drop Shadow Gradient Animated - Light Mode */}
+            {theme === 'light' && (
+              <div
+                className="pointer-events-none absolute left-0 right-0 z-10 transition-opacity duration-500"
+                style={{
+                  top: '0',
+                  height: '100px',
+                  WebkitClipPath: isMenuOpen ? 'none' : CLIP_PATH,
+                  clipPath: isMenuOpen ? 'none' : CLIP_PATH,
+                  background: 'linear-gradient(90deg, #0891b2, #06b6d4, #0891b2, #06b6d4, #0891b2)',
+                  backgroundSize: '300% 100%',
+                  animation: 'gradientShadowMove 6s linear infinite',
+                  opacity: isScrolled ? 0 : 1,
+                  filter: 'drop-shadow(0 8px 16px rgba(8,145,178,0.25))',
                 }}
               ></div>
             )}
 
             {/* Navbar */}
             <header
-              className={`pt-3 pb-3 relative z-20 pointer-events-auto transition-all duration-300
-                ${isScrolled
-                  ? "glassmorphism-header"
-                  : "bg-[#11142F]"
-                }`}
               style={{
-                WebkitClipPath: CLIP_PATH,
-                clipPath: CLIP_PATH,
-                ...(isScrolled
-                  ? {
-                      backgroundColor: "rgba(17, 20, 47, 0.71)",
-                      backdropFilter: "blur(7px) saturate(180%)",
-                      WebkitBackdropFilter: "blur(7px) saturate(180%)",
-                      border: "1px solid rgba(255,255,255,0.125)"
-                    }
-                  : {}
-                )
+                WebkitClipPath: isMenuOpen ? 'none' : CLIP_PATH,
+                clipPath: isMenuOpen ? 'none' : CLIP_PATH,
               }}
+              className={`pt-3 ${isMenuOpen ? 'pb-0' : 'pb-9'} relative z-20 pointer-events-auto transition-all duration-300
+                ${isMenuOpen
+                  ? "dark:bg-[#11142F]/80 bg-white/80 backdrop-blur-xl border-b dark:border-white/10 border-slate-200/50 shadow-lg"
+                  : isScrolled
+                    ? "dark:bg-[#11142F]/90 bg-white/85 backdrop-blur-md border-b dark:border-white/10 border-slate-200 shadow-sm"
+                    : "dark:bg-[#11142F] bg-white"
+                }`}
             >
               {/* =========== REFACTORED NAVIGATION =========== */}
-              <nav className="container mx-auto flex items-center justify-between flex-wrap pb-4 px-4">
-                
+              <nav className="container mx-auto flex items-center justify-between flex-wrap pb-0 px-1">
+
                 {/* --- MOBILE HEADER --- */}
                 <div className="w-full flex items-center justify-between md:hidden">
                   {/* Mobile: Brand Logo & Text (Left) */}
                   <a href="#home" className="flex items-center gap-3">
                     <img src={bangzenLogo} alt="Bangzen Logo" className="h-12 w-12 flex-shrink-0" />
                     <div>
-                      <h1 className="font-moderniz text-sm text-[#00ffdc] whitespace-nowrap">Zain Ahmad Fahrezi</h1>
-                      <p className="font-moderniz text-[9px] text-[#000754]" style={{ textShadow: '0.5px 0.5px 0 #00ffdc, -0.5px -0.5px 0 #00ffdc, 0.5px -0.5px 0 #00ffdc, -0.5px 0.5px 0 #00ffdc' }}>
+                      <h1 className="font-moderniz text-sm dark:text-[#00ffdc] text-slate-800 whitespace-nowrap">Zain Ahmad Fahrezi</h1>
+                      <p className="font-moderniz text-[9px] dark:text-[#00ffdc] text-slate-600" style={{ textShadow: 'none' }}>
                         Let's see the awesome Experience
                       </p>
                     </div>
                   </a>
                   {/* Mobile: Hamburger Button (Right) */}
-                  <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[#00ffdc] text-3xl pointer-events-auto">
+                  <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="dark:text-[#00ffdc] text-slate-800 text-3xl pointer-events-auto">
                     &#9776;
                   </button>
                 </div>
@@ -151,13 +165,13 @@ const Header = () => {
                     <NavLink href="#home">Home</NavLink>
                     <NavLink href="#about">About</NavLink>
                   </ul>
-                  
+
                   {/* Desktop: Center Logo & Text */}
                   <a href="#home" className="flex items-center gap-3">
                     <img src={bangzenLogo} alt="Bangzen Logo" className="h-12 w-12" />
                     <div className="block">
-                      <h1 className="font-moderniz text-base text-[#00ffdc]">Zain Ahmad Fahrezi</h1>
-                      <p className="font-moderniz text-[10px] text-[#000754]" style={{ textShadow: '0.5px 0.5px 0 #00ffdc, -0.5px -0.5px 0 #00ffdc, 0.5px -0.5px 0 #00ffdc, -0.5px 0.5px 0 #00ffdc' }}>
+                      <h1 className="font-moderniz text-base dark:text-[#00ffdc] text-slate-800">Zain Ahmad Fahrezi</h1>
+                      <p className="font-moderniz text-[10px] dark:text-[#00ffdc] text-slate-600" style={{ textShadow: 'none' }}>
                         Let's see the awesome Experience
                       </p>
                     </div>
@@ -165,16 +179,25 @@ const Header = () => {
 
                   {/* Desktop: Right Navigation & Admin Button */}
                   <div className="flex items-center gap-4">
+                    {/* Theme Toggle */}
+                    <button
+                      onClick={toggleTheme}
+                      className="p-2 rounded-full dark:bg-slate-800/50 bg-slate-200/50 hover:bg-slate-300/50 dark:hover:bg-slate-700/50 text-yellow-500 dark:text-slate-400 dark:hover:text-white transition-all duration-300 pointer-events-auto border dark:border-slate-700/30 border-slate-300"
+                      title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    >
+                      {theme === 'dark' ? <FaSun className="text-lg" /> : <FaMoon className="text-lg text-slate-800" />}
+                    </button>
+
                     <ul className="flex items-center list-none gap-16">
                       <NavLink href="#projects">Project</NavLink>
                       <NavLink href="#contact">Contact</NavLink>
                     </ul>
                     <button
                       onClick={handleAdminAccess}
-                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors duration-300 pointer-events-auto"
+                      className="flex items-center gap-2 dark:text-slate-400 text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors duration-300 pointer-events-auto"
                       title={isAuthenticated ? "Admin Dashboard" : "Admin Login"}
                     >
-                      <FaShieldAlt className={`text-lg ${isAuthenticated ? 'text-green-400' : 'text-slate-400'}`} />
+                      <FaShieldAlt className={`text-lg ${isAuthenticated ? 'text-green-500' : 'currentColor'}`} />
                     </button>
                   </div>
                 </div>
@@ -189,22 +212,31 @@ const Header = () => {
                       transition={{ duration: 0.4, ease: 'easeInOut' }}
                       className="w-full basis-full md:hidden"
                     >
-                      {/* This is the list that now appears in a row */}
-                      <ul className="flex flex-row flex-wrap justify-center items-center gap-x-8 gap-y-3 mt-4 list-none">
-                        <NavLink href="#home">Home</NavLink>
-                        <NavLink href="#about">About</NavLink>
-                        <NavLink href="#projects">Project</NavLink>
-                        <NavLink href="#contact">Contact</NavLink>
-                        <li>
-                          <button
-                            onClick={handleAdminAccess}
-                            className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors duration-300"
-                          >
-                            <FaShieldAlt className={`text-lg ${isAuthenticated ? 'text-green-400' : 'text-slate-400'}`} />
-                            <span>Admin</span>
-                          </button>
-                        </li>
-                      </ul>
+                      {/* Navigation Links + Theme Toggle */}
+                      <div className="flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2 mt-2 mb-2">
+                        <a href="#home" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Home</a>
+                        <a href="#about" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">About</a>
+                        <a href="#projects" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Project</a>
+                        <a href="#contact" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Contact</a>
+                        <button
+                          onClick={toggleTheme}
+                          className="p-2 rounded-full dark:bg-slate-800/50 bg-slate-200/50 hover:bg-slate-300/50 dark:hover:bg-slate-700/50 text-yellow-500 dark:text-slate-400 dark:hover:text-white transition-all duration-300 border dark:border-slate-700/30 border-slate-300"
+                          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        >
+                          {theme === 'dark' ? <FaSun className="text-lg" /> : <FaMoon className="text-lg text-slate-800" />}
+                        </button>
+                      </div>
+
+                      {/* Admin Button - Separate Row */}
+                      <div className="flex justify-center mt-2 mb-2">
+                        <button
+                          onClick={handleAdminAccess}
+                          className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors duration-300"
+                        >
+                          <FaShieldAlt className={`text-lg ${isAuthenticated ? 'text-green-500' : 'currentColor'}`} />
+                          <span className="dark:text-slate-400 text-slate-600">Admin</span>
+                        </button>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -212,41 +244,47 @@ const Header = () => {
             </header>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence >
 
       {/* Admin Login Modal */}
-      <AdminLogin
+      < AdminLogin
         isOpen={showAdminLogin}
         onClose={handleCloseAdminLogin}
         onSuccess={handleLoginSuccess}
       />
 
       {/* Admin Dashboard - Toggle between Messages and Comments */}
-      {adminView === 'messages' && (
-        <AdminMessages
-          isOpen={showAdminDashboard}
-          onClose={handleCloseAdminDashboard}
-        />
-      )}
-      
-      {adminView === 'comments' && (
-        <AdminComments
-          isOpen={showAdminDashboard}
-          onClose={handleCloseAdminDashboard}
-        />
-      )}
+      {
+        adminView === 'messages' && (
+          <AdminMessages
+            isOpen={showAdminDashboard}
+            onClose={handleCloseAdminDashboard}
+          />
+        )
+      }
+
+      {
+        adminView === 'comments' && (
+          <AdminComments
+            isOpen={showAdminDashboard}
+            onClose={handleCloseAdminDashboard}
+          />
+        )
+      }
 
       {/* Dashboard Switcher - Floating Button */}
-      {showAdminDashboard && (
-        <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2">
-          <button
-            onClick={() => setAdminView(adminView === 'messages' ? 'comments' : 'messages')}
-            className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white px-4 py-2 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2"
-          >
-            {adminView === 'messages' ? '💬 Comments' : '📧 Messages'}
-          </button>
-        </div>
-      )}
+      {
+        showAdminDashboard && (
+          <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2">
+            <button
+              onClick={() => setAdminView(adminView === 'messages' ? 'comments' : 'messages')}
+              className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white px-4 py-2 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2"
+            >
+              {adminView === 'messages' ? '💬 Comments' : '📧 Messages'}
+            </button>
+          </div>
+        )
+      }
 
       {/* Animasi gradient keyframes */}
       <style>
