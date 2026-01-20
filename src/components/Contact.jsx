@@ -244,7 +244,7 @@ const Contact = () => {
   return (
     <section id="contact" className="py-20 px-4 pb-32 relative overflow-hidden min-h-screen">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 via-transparent to-cyan-900/10"></div>
+      <div className="absolute inset-0 bg-transparent"></div>
 
       {/* Floating Elements */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-cyan-500/10 rounded-full blur-xl animate-pulse"></div>
@@ -520,8 +520,8 @@ const Contact = () => {
                         exit={{ opacity: 0, scale: 0.9, x: -100 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                         className={`group relative backdrop-blur-sm rounded-2xl p-6 border transition-all duration-300 ${comment.isPinned
-                            ? 'bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-400/50 shadow-lg shadow-cyan-500/10'
-                            : 'bg-slate-800/50 border-slate-700/30 hover:border-cyan-400/30'
+                          ? 'bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-400/50 shadow-lg shadow-cyan-500/10'
+                          : 'bg-slate-800/50 border-slate-700/30 hover:border-cyan-400/30'
                           }`}
                       >
                         {/* 📌 Pin Indicator */}
@@ -578,7 +578,7 @@ const Contact = () => {
                 </div>
 
                 {/* ✨ Gradient Fade Effect */}
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/60 to-transparent pointer-events-none z-10" />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/60 to-transparent pointer-events-none z-10 rounded-b-2xl" />
               </div>
             </div>
           </motion.div>
