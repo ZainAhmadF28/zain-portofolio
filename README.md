@@ -1,21 +1,35 @@
-# Portfolio - Zain Ahmad Fahrezi
+# PROJEK PORTFOLIO ZAIN AHMAD FAHREZI
 
-Modern portfolio website built with React and Vite.
+Ini adalah proyek React yang dikembangkan menggunakan Vite â€” sebuah build tool modern dengan performa tinggi, dukungan Hot Module Replacement (HMR), dan waktu pengembangan yang cepat. Proyek ini menampilkan portfolio interaktif dengan elemen 3D dan animasi yang halus.
 
-## íº€ Technologies
+> âš ï¸ Proyek ini masih dalam **tahap pengembangan aktif**. Mohon tidak menyalin, menjiplak, atau mendistribusikan ulang sebagian atau seluruh isi proyek ini **tanpa mencantumkan sumber atau izin dari pembuat.**
 
-* React
-* Vite
-* Tailwind CSS
-* Framer Motion
-* Supabase
+---
 
-## í³¦ Installation
+## ğŸ“† Teknologi yang Digunakan
 
-1. **Clone repository:**
+### Core & Frontend
+* âš›ï¸ [React](https://react.dev/)
+* âš¡ [Vite](https://vitejs.dev/)
+* ğŸ’¨ [Tailwind CSS](https://tailwindcss.com/)
+* ğŸ§ª [ESLint](https://eslint.org/)
+
+### Backend & Database
+* ğŸ”¥ [Supabase](https://supabase.com/)
+
+### Animasi & 3D
+* ğŸ§Š [Three.js](https://threejs.org/) & [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
+* ğŸ¬ [Framer Motion](https://www.framer.com/motion/)
+* ğŸ­ [GSAP](https://greensock.com/gsap/)
+
+---
+
+## ğŸ› ï¸ Cara Menjalankan Proyek Ini
+
+1. **Clone repositori ini:**
 
    ```bash
-   git clone https://github.com/ZainAhmadF28/zain-portofolio.git
+   git clone https://github.com/username/zain-portofolio.git
    cd zain-portofolio
    ```
 
@@ -25,33 +39,60 @@ Modern portfolio website built with React and Vite.
    npm install
    ```
 
-3. **Setup environment variables:**
+3. **Konfigurasi Environment:**
 
-   Create `.env` file:
-
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_key
+   Salin file `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
    ```
+   *Pastikan variabel environment untuk Supabase sudah terisi dengan benar.*
 
-4. **Run development server:**
+4. **Jalankan project secara lokal:**
 
    ```bash
    npm run dev
    ```
 
-5. **Build for production:**
+   Setelah itu buka browser ke: [http://localhost:5173](http://localhost:5173)
+
+5. **Build untuk produksi (opsional):**
 
    ```bash
    npm run build
    ```
 
-## í¼ Social Media
+---
 
-* í²¼ [LinkedIn](https://www.linkedin.com/in/zainahmadfahrezi)
-* í³¸ [Instagram](https://www.instagram.com/zain.ahmadf)
-* í¾¥ [TikTok](https://www.tiktok.com/@zainahmad.f)
+## â— Hak Cipta & Lisensi
 
-## í³„ License
+Proyek ini adalah karya asli milik **Zain Ahmad Fahrezi** dan hanya diperbolehkan untuk digunakan sebagai referensi pribadi.
 
-Â© 2024 Zain Ahmad Fahrezi. All rights reserved.
+ğŸš« **Dilarang keras menjiplak, mengupload ulang, atau menggunakan sebagian/keseluruhan kode tanpa mencantumkan sumber atau tanpa izin.**
+
+ğŸ“„ Untuk informasi lisensi atau kerja sama, silakan hubungi saya langsung melalui GitHub.
+
+---
+
+## ğŸ“Œ Catatan Tambahan
+
+Jika kamu ingin mengembangkan proyek ini lebih lanjut atau menggunakan sebagian ide/kodenya, **wajib mencantumkan sumber dengan link ke repositori ini**.
+
+Terima kasih sudah menghargai karya pengembang! ğŸ™
+
+---
+
+## ğŸ’– Dukung Pengembang
+
+Jika kamu merasa proyek ini bermanfaat dan ingin memberikan dukungan:
+
+* ğŸ’³ **Dana:** 0896-0433-2830
+* ğŸ¦ **Rekening BRI:** 0342 0107 8321 503 a.n. Zain Ahmad Fahrezi
+* ğŸ…¿ï¸ **PayPal:** [paypal.me/zainahmadfahrezi](https://paypal.me/zainahmadfahrezi)
+
+Setiap dukungan sangat berarti dan membantu saya untuk terus mengembangkan proyek-proyek open source lainnya. Terima kasih! ğŸ™Œ
+
+## ğŸŒ Sosial Media
+
+* ğŸ’¼ [LinkedIn](https://www.linkedin.com/in/zainahmadfahrezi)
+* ğŸ“¸ Instagram: [@zain.ahmadf](https://www.instagram.com/zain.ahmadf)
+* ğŸ¥ TikTok: [@zainahmad.f](https://www.tiktok.com/@zainahmad.f)
