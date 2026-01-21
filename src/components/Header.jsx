@@ -5,24 +5,25 @@ import bangzenLogo from '../assets/images/BGZENBGIJObulat.png';
 import { useNavbar } from '../contexts/NavbarContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAdmin } from '../contexts/AdminContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLogin from './AdminLogin';
-import AdminMessages from './AdminMessages';
-import AdminComments from './AdminComments';
+import AdminDashboard from './AdminDashboard';
 
 const CLIP_PATH =
-  'polygon(0 0, 100% 0, 100% 80%, 68% 80%, 64% 100%, 36% 100%, 32% 80%, 0 80%)';
+  'polygon(0 0, 100% 0, 100% 85%, 68% 85%, 64% 100%, 36% 100%, 32% 85%, 0 85%)';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [adminView, setAdminView] = useState('messages'); // 'messages' or 'comments'
-
 
   const { isNavbarVisible, hideNavbar, showNavbar } = useNavbar();
   const { isAuthenticated, logout } = useAdmin();
   const { theme, toggleTheme } = useTheme();
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,6 +32,20 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Scroll to hash on location change if on home
+  useEffect(() => {
+    if (location.pathname === '/' && location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    } else if (location.pathname === '/' && !location.hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
 
   const handleAdminAccess = () => {
     if (isAuthenticated) {
@@ -64,17 +79,46 @@ const Header = () => {
     showNavbar();
   };
 
-  const NavLink = ({ href, children }) => (
-    <li>
-      <a
-        href={href}
-        className="relative block dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider py-2 transition-transform duration-300 hover:scale-110 group"
-      >
-        {children}
-        <span className="absolute bottom-1 left-0 block h-[2px] w-0 dark:bg-[#00ffdc] bg-cyan-600 transition-all duration-500 group-hover:w-full"></span>
-      </a>
-    </li>
-  );
+  // Improved Navigation Handler
+  const handleNavClick = (e, href) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+
+    if (href.startsWith('#')) {
+      if (location.pathname === '/') {
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          // Update URL hash without reload
+          window.history.pushState(null, '', href);
+        }
+      } else {
+        navigate('/' + href);
+      }
+    } else {
+      navigate(href);
+    }
+  };
+
+  const NavLink = ({ href, children, isGallery }) => {
+    // Check active state
+    const isActive = isGallery
+      ? location.pathname === '/gallery'
+      : location.pathname === '/' && location.hash === href;
+
+    return (
+      <li>
+        <a
+          href={href}
+          onClick={(e) => handleNavClick(e, href)}
+          className={`relative block dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider py-2 transition-transform duration-300 hover:scale-110 group ${isActive ? 'text-cyan-500 dark:text-cyan-400' : ''}`}
+        >
+          {children}
+          <span className={`absolute bottom-1 left-0 block h-[2px] w-0 dark:bg-[#00ffdc] bg-cyan-600 transition-all duration-500 group-hover:w-full ${isActive ? 'w-full' : ''}`}></span>
+        </a>
+      </li>
+    );
+  };
 
   return (
     <>
@@ -87,13 +131,13 @@ const Header = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="fixed top-0 left-0 w-full z-50 pointer-events-none"
           >
-            {/* Drop Shadow Gradient Animated - Dark Mode */}
-            {theme === 'dark' && (
+            {/* Drop Shadow Gradient Animated */}
+            {theme === 'dark' ? (
               <div
                 className="pointer-events-none absolute left-0 right-0 z-10 transition-opacity duration-500"
                 style={{
                   top: '0',
-                  height: '100px',
+                  height: '85px',
                   WebkitClipPath: isMenuOpen ? 'none' : CLIP_PATH,
                   clipPath: isMenuOpen ? 'none' : CLIP_PATH,
                   background: 'linear-gradient(90deg, #00fff0, #00ffdc, #4079ff, #40ffaa, #00fff0)',
@@ -103,10 +147,7 @@ const Header = () => {
                   filter: 'drop-shadow(0 16px 24px rgba(64,255,170,0.35))',
                 }}
               ></div>
-            )}
-
-            {/* Drop Shadow Gradient Animated - Light Mode */}
-            {theme === 'light' && (
+            ) : (
               <div
                 className="pointer-events-none absolute left-0 right-0 z-10 transition-opacity duration-500"
                 style={{
@@ -129,7 +170,7 @@ const Header = () => {
                 WebkitClipPath: isMenuOpen ? 'none' : CLIP_PATH,
                 clipPath: isMenuOpen ? 'none' : CLIP_PATH,
               }}
-              className={`pt-3 ${isMenuOpen ? 'pb-0' : 'pb-9'} relative z-20 pointer-events-auto transition-all duration-300
+              className={`pt-3 ${isMenuOpen ? 'pb-0' : 'pb-5'} relative z-20 pointer-events-auto transition-all duration-300
                 ${isMenuOpen
                   ? "dark:bg-[#11142F]/80 bg-white/80 backdrop-blur-xl border-b dark:border-white/10 border-slate-200/50 shadow-lg"
                   : isScrolled
@@ -143,7 +184,7 @@ const Header = () => {
                 {/* --- MOBILE HEADER --- */}
                 <div className="w-full flex items-center justify-between md:hidden">
                   {/* Mobile: Brand Logo & Text (Left) */}
-                  <a href="#home" className="flex items-center gap-3">
+                  <a href="/" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center gap-3">
                     <img src={bangzenLogo} alt="Bangzen Logo" className="h-12 w-12 flex-shrink-0" />
                     <div>
                       <h1 className="font-moderniz text-sm dark:text-[#00ffdc] text-slate-800 whitespace-nowrap">Zain Ahmad Fahrezi</h1>
@@ -161,13 +202,14 @@ const Header = () => {
                 {/* --- DESKTOP HEADER --- */}
                 <div className="hidden w-full md:flex items-center justify-around">
                   {/* Desktop: Left Navigation */}
-                  <ul className="flex items-center list-none gap-x-20">
+                  <ul className="flex items-center list-none gap-x-12 lg:gap-x-20">
                     <NavLink href="#home">Home</NavLink>
-                    <NavLink href="#about">About</NavLink>
+                    <NavLink href="#projects">Project</NavLink>
+                    <NavLink href="/gallery" isGallery>Gallery</NavLink>
                   </ul>
 
                   {/* Desktop: Center Logo & Text */}
-                  <a href="#home" className="flex items-center gap-3">
+                  <a href="/" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center gap-3">
                     <img src={bangzenLogo} alt="Bangzen Logo" className="h-12 w-12" />
                     <div className="block">
                       <h1 className="font-moderniz text-base dark:text-[#00ffdc] text-slate-800">Zain Ahmad Fahrezi</h1>
@@ -188,8 +230,8 @@ const Header = () => {
                       {theme === 'dark' ? <FaSun className="text-lg" /> : <FaMoon className="text-lg text-slate-800" />}
                     </button>
 
-                    <ul className="flex items-center list-none gap-16">
-                      <NavLink href="#projects">Project</NavLink>
+                    <ul className="flex items-center list-none gap-10 lg:gap-16">
+                      <NavLink href="#about">About</NavLink>
                       <NavLink href="#contact">Contact</NavLink>
                     </ul>
                     <button
@@ -214,10 +256,11 @@ const Header = () => {
                     >
                       {/* Navigation Links + Theme Toggle */}
                       <div className="flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2 mt-2 mb-2">
-                        <a href="#home" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Home</a>
-                        <a href="#about" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">About</a>
-                        <a href="#projects" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Project</a>
-                        <a href="#contact" className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Contact</a>
+                        <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Home</a>
+                        <a href="#projects" onClick={(e) => handleNavClick(e, '#projects')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Project</a>
+                        <a href="/gallery" onClick={(e) => handleNavClick(e, '/gallery')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110 text-cyan-500">Gallery</a>
+                        <a href="#about" onClick={(e) => handleNavClick(e, '#about')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">About</a>
+                        <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Contact</a>
                         <button
                           onClick={toggleTheme}
                           className="p-2 rounded-full dark:bg-slate-800/50 bg-slate-200/50 hover:bg-slate-300/50 dark:hover:bg-slate-700/50 text-yellow-500 dark:text-slate-400 dark:hover:text-white transition-all duration-300 border dark:border-slate-700/30 border-slate-300"
@@ -247,44 +290,17 @@ const Header = () => {
       </AnimatePresence >
 
       {/* Admin Login Modal */}
-      < AdminLogin
+      <AdminLogin
         isOpen={showAdminLogin}
         onClose={handleCloseAdminLogin}
         onSuccess={handleLoginSuccess}
       />
 
-      {/* Admin Dashboard - Toggle between Messages and Comments */}
-      {
-        adminView === 'messages' && (
-          <AdminMessages
-            isOpen={showAdminDashboard}
-            onClose={handleCloseAdminDashboard}
-          />
-        )
-      }
-
-      {
-        adminView === 'comments' && (
-          <AdminComments
-            isOpen={showAdminDashboard}
-            onClose={handleCloseAdminDashboard}
-          />
-        )
-      }
-
-      {/* Dashboard Switcher - Floating Button */}
-      {
-        showAdminDashboard && (
-          <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2">
-            <button
-              onClick={() => setAdminView(adminView === 'messages' ? 'comments' : 'messages')}
-              className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white px-4 py-2 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2"
-            >
-              {adminView === 'messages' ? '💬 Comments' : '📧 Messages'}
-            </button>
-          </div>
-        )
-      }
+      {/* UNIFIED Admin Dashboard */}
+      <AdminDashboard
+        isOpen={showAdminDashboard}
+        onClose={handleCloseAdminDashboard}
+      />
 
       {/* Animasi gradient keyframes */}
       <style>

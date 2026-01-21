@@ -106,11 +106,8 @@ const Squares = ({
           ctx.strokeRect(squareX, squareY, squareSize, squareSize);
         }
       }
-    };
 
-    const updateAnimation = (timestamp) => {
-      if (!isActive) return; // Stop if not active
-
+      // Move grid update logic here to sync with throttled FPS
       const effectiveSpeed = Math.max(speed, 0.1);
       switch (direction) {
         case "right":
@@ -132,7 +129,10 @@ const Squares = ({
         default:
           break;
       }
+    };
 
+    const updateAnimation = (timestamp) => {
+      if (!isActive) return; // Stop if not active
       draw(timestamp);
       requestRef.current = requestAnimationFrame(updateAnimation);
     };

@@ -401,6 +401,74 @@ const ProjectCard = ({ project, onClick }) => {
 };
 
 // ===================================
+// KOMPONEN PREVIEW MODAL SERTIFIKAT
+// ===================================
+const CertificatePreviewModal = ({ certificate, onClose }) => {
+  if (!certificate) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 50 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="relative max-w-4xl w-full dark:bg-slate-900/90 bg-white/95 backdrop-blur-xl rounded-3xl border dark:border-white/10 border-slate-200 shadow-2xl overflow-hidden flex flex-col md:flex-row"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <div className="absolute top-4 right-4 z-20">
+          <button onClick={onClose} className="dark:bg-black/40 bg-slate-200/80 hover:bg-red-500/20 backdrop-blur-md p-2 rounded-full dark:border-white/10 border-slate-300 hover:border-red-500/30 transition-all duration-300 group">
+            <FaTimes className="dark:text-white/70 text-slate-600 group-hover:text-red-500" />
+          </button>
+        </div>
+
+        {/* Image Section */}
+        <div className="w-full md:w-3/5 relative min-h-[300px] md:min-h-[500px] bg-slate-900">
+          <img src={certificate.image} alt={certificate.title} className="absolute inset-0 w-full h-full object-contain p-4 bg-slate-950/50" />
+        </div>
+
+        {/* Content Section */}
+        <div className="w-full md:w-2/5 p-8 flex flex-col justify-center dark:bg-slate-900/50 bg-white">
+          <div className="mb-6">
+            <div className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-wider mb-4">
+              {certificate.issuer}
+            </div>
+            <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-2 leading-tight">{certificate.title}</h2>
+            <p className="text-slate-400 font-mono text-sm">{certificate.date}</p>
+          </div>
+
+          <div className="space-y-4 mt-auto">
+            <a
+              href={certificate.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/25 group"
+            >
+              <FaDownload className="group-hover:animate-bounce" />
+              <span>Download / View PDF</span>
+            </a>
+
+            <button
+              onClick={onClose}
+              className="w-full px-6 py-3 dark:bg-slate-800 bg-slate-200 dark:hover:bg-slate-700 hover:bg-slate-300 dark:text-slate-300 text-slate-700 font-semibold rounded-xl transition-all duration-300"
+            >
+              Close Preview
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// ===================================
 // KOMPONEN UTAMA SECTION PROJECT
 // ===================================
 function ProjectSection() {

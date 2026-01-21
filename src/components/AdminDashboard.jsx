@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaProjectDiagram, 
-  FaCertificate, 
-  FaEnvelope, 
+import {
+  FaProjectDiagram,
+  FaCertificate,
+  FaEnvelope,
   FaComments,
   FaPlus,
   FaEdit,
@@ -29,6 +29,7 @@ const AdminDashboard = ({ isOpen, onClose }) => {
   const [certificates, setCertificates] = useState([]);
   const [messages, setMessages] = useState([]);
   const [comments, setComments] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -52,11 +53,21 @@ const AdminDashboard = ({ isOpen, onClose }) => {
     image_url: ''
   });
 
+  // Gallery Form State
+  const [galleryForm, setGalleryForm] = useState({
+    title: '',
+    description: '',
+    media_url: '',
+    type: 'image',
+    date: new Date().toISOString().split('T')[0],
+  });
+
   // File upload states
   const [uploadingFile, setUploadingFile] = useState(false);
   const [projectImageFile, setProjectImageFile] = useState(null);
   const [certificateImageFile, setCertificateImageFile] = useState(null);
   const [certificatePdfFile, setCertificatePdfFile] = useState(null);
+  const [galleryMediaFile, setGalleryMediaFile] = useState(null); // New for gallery
 
   useEffect(() => {
     if (isOpen) {
@@ -81,6 +92,9 @@ const AdminDashboard = ({ isOpen, onClose }) => {
         case 'comments':
           await fetchComments();
           break;
+        case 'gallery':
+          await fetchGallery();
+          break;
         default:
           break;
       }
@@ -89,6 +103,15 @@ const AdminDashboard = ({ isOpen, onClose }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchGallery = async () => {
+    const { data, error } = await supabase
+      .from('gallery')
+      .select('*')
+      .order('date', { ascending: false });
+    if (data) setGallery(data);
+    if (error) console.error('Error fetching gallery:', error);
   };
 
   const fetchProjects = async () => {
@@ -132,11 +155,11 @@ const AdminDashboard = ({ isOpen, onClose }) => {
   const uploadFile = async (file, bucket, folder = '') => {
     try {
       setUploadingFile(true);
-      
+
       // Generate unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${folder}${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      
+
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from(bucket)
@@ -235,6 +258,61 @@ const AdminDashboard = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleGalleryMediaUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploadingFile(true);
+    const uploadedUrls = [];
+    let hasError = false;
+
+    // Check file type based on selected type (image or video)
+    const isVideo = galleryForm.type === 'video';
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // Increased limits
+
+    try {
+      for (const file of files) {
+        if (isVideo && !file.type.startsWith('video/')) {
+          alert(`File ${file.name} is not a video.`);
+          continue;
+        }
+        if (!isVideo && !file.type.startsWith('image/')) {
+          alert(`File ${file.name} is not an image.`);
+          continue;
+        }
+        if (file.size > maxSize) {
+          alert(`File ${file.name} exceeds size limit.`);
+          continue;
+        }
+
+        try {
+          // Bucket: 'gallery-media'
+          const mediaUrl = await uploadFile(file, 'gallery-media', `${galleryForm.type}s/`);
+          uploadedUrls.push(mediaUrl);
+        } catch (err) {
+          console.error(`Failed to upload ${file.name}:`, err);
+          hasError = true;
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        const currentUrls = galleryForm.media_urls || [];
+        const newUrls = [...currentUrls, ...uploadedUrls];
+        setGalleryForm(prev => ({
+          ...prev,
+          media_urls: newUrls,
+          media_url: newUrls[0] // Fallback for backward compatibility
+        }));
+        if (!hasError) alert('All media uploaded successfully!');
+        else alert('Some files uploaded, but errors occurred with others.');
+      }
+    } catch (error) {
+      alert('Upload process failed: ' + error.message);
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
   // CREATE Operations
   const createProject = async () => {
     try {
@@ -245,9 +323,9 @@ const AdminDashboard = ({ isOpen, onClose }) => {
           ...projectForm,
           tags: tagsArray
         }]);
-      
+
       if (error) throw error;
-      
+
       alert('Project created successfully!');
       resetProjectForm();
       setIsCreating(false);
@@ -263,9 +341,9 @@ const AdminDashboard = ({ isOpen, onClose }) => {
       const { error } = await supabase
         .from('certificates')
         .insert([certificateForm]);
-      
+
       if (error) throw error;
-      
+
       alert('Certificate created successfully!');
       resetCertificateForm();
       setIsCreating(false);
@@ -279,10 +357,10 @@ const AdminDashboard = ({ isOpen, onClose }) => {
   // UPDATE Operations
   const updateProject = async () => {
     try {
-      const tagsArray = typeof projectForm.tags === 'string' 
+      const tagsArray = typeof projectForm.tags === 'string'
         ? projectForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         : projectForm.tags;
-      
+
       const { error } = await supabase
         .from('projects')
         .update({
@@ -290,9 +368,9 @@ const AdminDashboard = ({ isOpen, onClose }) => {
           tags: tagsArray
         })
         .eq('id', editingItem.id);
-      
+
       if (error) throw error;
-      
+
       alert('Project updated successfully!');
       setEditingItem(null);
       resetProjectForm();
@@ -309,9 +387,9 @@ const AdminDashboard = ({ isOpen, onClose }) => {
         .from('certificates')
         .update(certificateForm)
         .eq('id', editingItem.id);
-      
+
       if (error) throw error;
-      
+
       alert('Certificate updated successfully!');
       setEditingItem(null);
       resetCertificateForm();
@@ -328,7 +406,7 @@ const AdminDashboard = ({ isOpen, onClose }) => {
         .from('contact_messages')
         .update({ status })
         .eq('id', id);
-      
+
       if (error) throw error;
       fetchMessages();
     } catch (error) {
@@ -339,15 +417,15 @@ const AdminDashboard = ({ isOpen, onClose }) => {
   // DELETE Operations
   const deleteProject = async (id) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
-    
+
     try {
       const { error } = await supabase
         .from('projects')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
-      
+
       alert('Project deleted successfully!');
       fetchProjects();
     } catch (error) {
@@ -358,15 +436,15 @@ const AdminDashboard = ({ isOpen, onClose }) => {
 
   const deleteCertificate = async (id) => {
     if (!confirm('Are you sure you want to delete this certificate?')) return;
-    
+
     try {
       const { error } = await supabase
         .from('certificates')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
-      
+
       alert('Certificate deleted successfully!');
       fetchCertificates();
     } catch (error) {
@@ -377,15 +455,15 @@ const AdminDashboard = ({ isOpen, onClose }) => {
 
   const deleteMessage = async (id) => {
     if (!confirm('Are you sure you want to delete this message?')) return;
-    
+
     try {
       const { error } = await supabase
         .from('contact_messages')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
-      
+
       alert('Message deleted successfully!');
       fetchMessages();
     } catch (error) {
@@ -396,15 +474,15 @@ const AdminDashboard = ({ isOpen, onClose }) => {
 
   const deleteComment = async (id) => {
     if (!confirm('Are you sure you want to delete this comment?')) return;
-    
+
     try {
       const { error } = await supabase
         .from('comments')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
-      
+
       alert('Comment deleted successfully!');
       fetchComments();
     } catch (error) {
@@ -420,9 +498,9 @@ const AdminDashboard = ({ isOpen, onClose }) => {
         .from('comments')
         .update({ is_pinned: !currentPinStatus })
         .eq('id', id);
-      
+
       if (error) throw error;
-      
+
       const action = !currentPinStatus ? 'pinned' : 'unpinned';
       alert(`Comment ${action} successfully! 📌`);
       fetchComments();
@@ -455,6 +533,69 @@ const AdminDashboard = ({ isOpen, onClose }) => {
     });
   };
 
+  // GALLERY OPERATIONS
+  const createGallery = async () => {
+    try {
+      const { error } = await supabase
+        .from('gallery')
+        .insert([galleryForm]);
+
+      if (error) throw error;
+      alert('Gallery item created successfully!');
+      resetGalleryForm();
+      setIsCreating(false);
+      fetchGallery();
+    } catch (error) {
+      console.error('Error creating gallery item:', error);
+      alert('Failed to create gallery item: ' + error.message);
+    }
+  };
+
+  const updateGallery = async () => {
+    try {
+      const { error } = await supabase
+        .from('gallery')
+        .update(galleryForm)
+        .eq('id', editingItem.id);
+
+      if (error) throw error;
+      alert('Gallery item updated successfully!');
+      setEditingItem(null);
+      resetGalleryForm();
+      fetchGallery();
+    } catch (error) {
+      console.error('Error updating gallery item:', error);
+      alert('Failed to update gallery item: ' + error.message);
+    }
+  };
+
+  const deleteGallery = async (id) => {
+    if (!confirm('Are you sure you want to delete this gallery item?')) return;
+    try {
+      const { error } = await supabase
+        .from('gallery')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      alert('Gallery item deleted successfully!');
+      fetchGallery();
+    } catch (error) {
+      console.error('Error deleting gallery item:', error);
+      alert('Failed to delete gallery item: ' + error.message);
+    }
+  };
+
+  const resetGalleryForm = () => {
+    setGalleryForm({
+      title: '',
+      description: '',
+      media_url: '',
+      type: 'image',
+      date: new Date().toISOString().split('T')[0],
+    });
+  };
+
   const startEdit = (item, type) => {
     setEditingItem({ ...item, type });
     if (type === 'project') {
@@ -475,12 +616,21 @@ const AdminDashboard = ({ isOpen, onClose }) => {
         credential_url: item.credential_url || '',
         image_url: item.image_url || ''
       });
+    } else if (type === 'gallery') {
+      setGalleryForm({
+        title: item.title,
+        description: item.description,
+        media_url: item.media_url,
+        type: item.type,
+        date: item.date
+      });
     }
   };
 
   const tabs = [
     { id: 'projects', label: 'Projects', icon: <FaProjectDiagram />, count: projects.length },
     { id: 'certificates', label: 'Certificates', icon: <FaCertificate />, count: certificates.length },
+    { id: 'gallery', label: 'Gallery', icon: <FaImage />, count: gallery.length },
     { id: 'messages', label: 'Messages', icon: <FaEnvelope />, count: messages.length },
     { id: 'comments', label: 'Comments', icon: <FaComments />, count: comments.length }
   ];
@@ -527,11 +677,10 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                   setIsCreating(false);
                   setEditingItem(null);
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-cyan-600 to-emerald-600 text-white shadow-lg'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                }`}
+                className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap ${activeTab === tab.id
+                  ? 'bg-gradient-to-r from-cyan-600 to-emerald-600 text-white shadow-lg'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  }`}
               >
                 {tab.icon}
                 <span>{tab.label}</span>
@@ -739,6 +888,200 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                   </div>
                 )}
 
+                {/* Gallery Tab */}
+                {activeTab === 'gallery' && (
+                  <div className="space-y-6">
+                    {/* Add New Button */}
+                    {!isCreating && !editingItem && (
+                      <button
+                        onClick={() => {
+                          setIsCreating(true);
+                          resetGalleryForm();
+                        }}
+                        className="w-full bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3"
+                      >
+                        <FaPlus />
+                        Add New Activity
+                      </button>
+                    )}
+
+                    {/* Create/Edit Form */}
+                    {(isCreating || editingItem?.type === 'gallery') && (
+                      <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                        <h3 className="text-2xl font-bold text-white mb-6">
+                          {isCreating ? 'Create New Activity' : 'Edit Activity'}
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-slate-400 mb-2">Title *</label>
+                            <input
+                              type="text"
+                              required
+                              value={galleryForm.title}
+                              onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
+                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-400 mb-2">Date *</label>
+                            <input
+                              type="date"
+                              required
+                              value={galleryForm.date}
+                              onChange={(e) => setGalleryForm({ ...galleryForm, date: e.target.value })}
+                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-400 mb-2">Type *</label>
+                            <select
+                              value={galleryForm.type}
+                              onChange={(e) => setGalleryForm({ ...galleryForm, type: e.target.value })}
+                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                            >
+                              <option value="image">Image</option>
+                              <option value="video">Video</option>
+                            </select>
+                          </div>
+                          <div>
+
+                            <label className="block text-slate-400 mb-2">Media Files (Image/Video) *</label>
+                            <div className="space-y-4">
+                              {/* File Input */}
+                              <input
+                                type="file"
+                                multiple
+                                accept={galleryForm.type === 'video' ? "video/*" : "image/*"}
+                                onChange={handleGalleryMediaUpload}
+                                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 file:cursor-pointer focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                              />
+                              <p className="text-xs text-slate-500">You can select multiple files to create a carousel.</p>
+
+                              {uploadingFile && <div className="text-sm text-cyan-400 animate-pulse">Uploading... Please wait.</div>}
+
+                              {/* Manual URL Input (Fallback) */}
+                              <div className="flex gap-2">
+                                <input
+                                  type="url"
+                                  placeholder="Add URL manually..."
+                                  id="manual-url-input"
+                                  className="flex-1 px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-slate-300 focus:border-cyan-400"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const input = document.getElementById('manual-url-input');
+                                    if (input.value) {
+                                      const newUrls = [...(galleryForm.media_urls || []), input.value];
+                                      setGalleryForm(prev => ({
+                                        ...prev,
+                                        media_urls: newUrls,
+                                        media_url: newUrls[0] // Update primary thumbnail
+                                      }));
+                                      input.value = '';
+                                    }
+                                  }}
+                                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white text-sm"
+                                >
+                                  Add
+                                </button>
+                              </div>
+
+                              {/* Preview List */}
+                              {galleryForm.media_urls && galleryForm.media_urls.length > 0 && (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+                                  {galleryForm.media_urls.map((url, index) => (
+                                    <div key={index} className="relative group rounded-lg overflow-hidden border border-slate-700 bg-black/50 aspect-video flex items-center justify-center">
+                                      {galleryForm.type === 'video' ? (
+                                        <video src={url} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <img src={url} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
+                                      )}
+
+                                      {/* Remove Button */}
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newUrls = galleryForm.media_urls.filter((_, i) => i !== index);
+                                          setGalleryForm(prev => ({
+                                            ...prev,
+                                            media_urls: newUrls,
+                                            media_url: newUrls[0] || '' // Update/Clear thumbnail
+                                          }));
+                                        }}
+                                        className="absolute top-1 right-1 p-1 bg-red-500/80 hover:bg-red-600 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                      >
+                                        <FaTrash size={12} />
+                                      </button>
+
+                                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] text-white p-1 truncate text-center">
+                                        {index === 0 ? 'Cover' : `Slide ${index + 1}`}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-slate-400 mb-2">Description</label>
+                            <textarea
+                              value={galleryForm.description}
+                              onChange={(e) => setGalleryForm({ ...galleryForm, description: e.target.value })}
+                              rows="3"
+                              className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-4 mt-6">
+                          <button
+                            onClick={isCreating ? createGallery : updateGallery}
+                            disabled={uploadingFile}
+                            className={`flex-1 bg-gradient-to-r from-cyan-600 to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 ${uploadingFile ? 'opacity-50 cursor-not-allowed' : 'hover:from-cyan-500 hover:to-emerald-500'}`}
+                          >
+                            <FaSave />
+                            {uploadingFile ? 'Uploading Media...' : (isCreating ? 'Create Activity' : 'Update Activity')}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setIsCreating(false);
+                              setEditingItem(null);
+                              resetGalleryForm();
+                            }}
+                            className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-colors duration-300"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Gallery List */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {gallery.map(item => (
+                        <div key={item.id} className="bg-slate-800 rounded-2xl p-4 border border-slate-700 hover:border-cyan-400/50 transition-all duration-300 group">
+                          <div className="aspect-video rounded-xl bg-slate-900 overflow-hidden mb-3 relative">
+                            <img src={item.media_url} alt={item.title} className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Media'} />
+                            <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-xs text-white capitalize">
+                              {item.type}
+                            </div>
+                          </div>
+                          <h3 className="font-bold text-white truncate">{item.title}</h3>
+                          <p className="text-slate-400 text-sm mb-3">{item.date}</p>
+                          <div className="flex justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => startEdit(item, 'gallery')} className="p-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white">
+                              <FaEdit />
+                            </button>
+                            <button onClick={() => deleteGallery(item.id)} className="p-2 bg-red-600 hover:bg-red-500 rounded-lg text-white">
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Certificates Tab */}
                 {activeTab === 'certificates' && (
                   <div className="space-y-6">
@@ -902,11 +1245,10 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                 {activeTab === 'messages' && (
                   <div className="space-y-4">
                     {messages.map(msg => (
-                      <div key={msg.id} className={`bg-slate-800 rounded-2xl p-6 border transition-all duration-300 ${
-                        msg.status === 'unread' 
-                          ? 'border-cyan-400 bg-cyan-900/10' 
-                          : 'border-slate-700'
-                      }`}>
+                      <div key={msg.id} className={`bg-slate-800 rounded-2xl p-6 border transition-all duration-300 ${msg.status === 'unread'
+                        ? 'border-cyan-400 bg-cyan-900/10'
+                        : 'border-slate-700'
+                        }`}>
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -958,13 +1300,12 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                 {activeTab === 'comments' && (
                   <div className="space-y-4">
                     {comments.map(comment => (
-                      <div 
-                        key={comment.id} 
-                        className={`rounded-2xl p-6 border transition-all duration-300 ${
-                          comment.is_pinned 
-                            ? 'bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-400/50 shadow-lg' 
-                            : 'bg-slate-800 border-slate-700 hover:border-cyan-400/50'
-                        }`}
+                      <div
+                        key={comment.id}
+                        className={`rounded-2xl p-6 border transition-all duration-300 ${comment.is_pinned
+                          ? 'bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-400/50 shadow-lg'
+                          : 'bg-slate-800 border-slate-700 hover:border-cyan-400/50'
+                          }`}
                       >
                         {/* Pin Indicator */}
                         {comment.is_pinned && (
@@ -973,7 +1314,7 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                             <span className="text-sm font-semibold">Pinned Comment</span>
                           </div>
                         )}
-                        
+
                         <div className="flex gap-4">
                           <img
                             src={comment.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.name)}&background=00ffdc&color=000754&size=100`}
@@ -992,11 +1333,10 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                                 {/* Pin/Unpin Button */}
                                 <button
                                   onClick={() => togglePinComment(comment.id, comment.is_pinned)}
-                                  className={`p-2 rounded-lg transition-colors duration-300 ${
-                                    comment.is_pinned
-                                      ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                                      : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-                                  }`}
+                                  className={`p-2 rounded-lg transition-colors duration-300 ${comment.is_pinned
+                                    ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                                    : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                                    }`}
                                   title={comment.is_pinned ? 'Unpin comment' : 'Pin comment'}
                                 >
                                   <FaThumbtack className="w-5 h-5" />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Preloader from './components/Preloader.jsx';
@@ -26,8 +27,10 @@ const Main = () => {
 // Render komponen Main ke dalam DOM
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <Main />
-    </ThemeProvider>
+    <BrowserRouter>
+      <ThemeProvider>
+        <Main />
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

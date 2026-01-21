@@ -1,18 +1,3 @@
-# Environment variables
-.env
-.env.*
-!.env.example
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# SECURITY: Admin credentials and sensitive SQL files
-supabase/insert-admin.sql
-supabase/*admin*.sql
-**/backup*.sql
-**/*password*.sql
-
 # Logs
 logs
 *.log
@@ -23,19 +8,14 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Production builds
-dist/
-dist-ssr/
-build/
+node_modules
+dist
+dist-ssr
+*.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -43,23 +23,33 @@ build/
 *.njsproj
 *.sln
 *.sw?
-*.swp
-*~
 
-# Temporary files
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Supabase
+supabase/config.toml
+supabase/.temp
+supabase/*
+!supabase/migrations
+!supabase/config.toml
+# Ignore SQL scripts created during development
+*.sql
+
+# Vite
+.vite/
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Testing
+coverage
+
+# Temporary
 tmp/
 temp/
 *.tmp
 *.bak
-*.backup
-
-# OS files
-Thumbs.db
-desktop.ini
-
-# Uploads
-uploads/
-public/uploads/
-
-# Vercel
-.vercel
