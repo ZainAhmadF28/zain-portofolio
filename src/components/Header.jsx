@@ -8,17 +8,18 @@ import { useAdmin } from '../contexts/AdminContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
+import { StaggeredMenu } from './StaggeredMenu';
 
 const CLIP_PATH =
   'polygon(0 0, 100% 0, 100% 85%, 68% 85%, 64% 100%, 36% 100%, 32% 85%, 0 85%)';
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false); // REPLACED BY CONTEXT
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
-  const { isNavbarVisible, hideNavbar, showNavbar } = useNavbar();
+  const { isNavbarVisible, hideNavbar, showNavbar, isMenuOpen, setIsMenuOpen } = useNavbar();
   const { isAuthenticated, logout } = useAdmin();
   const { theme, toggleTheme } = useTheme();
 
@@ -152,7 +153,7 @@ const Header = () => {
                 className="pointer-events-none absolute left-0 right-0 z-10 transition-opacity duration-500"
                 style={{
                   top: '0',
-                  height: '100px',
+                  height: '85px',
                   WebkitClipPath: isMenuOpen ? 'none' : CLIP_PATH,
                   clipPath: isMenuOpen ? 'none' : CLIP_PATH,
                   background: 'linear-gradient(90deg, #0891b2, #06b6d4, #0891b2, #06b6d4, #0891b2)',
@@ -200,16 +201,20 @@ const Header = () => {
                 </div>
 
                 {/* --- DESKTOP HEADER --- */}
-                <div className="hidden w-full md:flex items-center justify-around">
-                  {/* Desktop: Left Navigation */}
-                  <ul className="flex items-center list-none gap-x-12 lg:gap-x-20">
+                <div className="hidden w-full md:grid grid-cols-3 items-center px-8 relative min-h-[48px]">
+                  {/* Desktop: Left Navigation (Start) */}
+                  <ul className="justify-self-start flex items-center list-none gap-8 lg:gap-10">
                     <NavLink href="#home">Home</NavLink>
                     <NavLink href="#projects">Project</NavLink>
                     <NavLink href="/gallery" isGallery>Gallery</NavLink>
                   </ul>
 
-                  {/* Desktop: Center Logo & Text */}
-                  <a href="/" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center gap-3">
+                  {/* Desktop: Center Logo & Text (Center) */}
+                  <a
+                    href="/"
+                    onClick={(e) => handleNavClick(e, '#home')}
+                    className="justify-self-center flex items-center gap-3"
+                  >
                     <img src={bangzenLogo} alt="Bangzen Logo" className="h-12 w-12" />
                     <div className="block">
                       <h1 className="font-moderniz text-base dark:text-[#00ffdc] text-slate-800">Zain Ahmad Fahrezi</h1>
@@ -219,18 +224,13 @@ const Header = () => {
                     </div>
                   </a>
 
-                  {/* Desktop: Right Navigation & Admin Button */}
-                  <div className="flex items-center gap-4">
+                  {/* Desktop: Right Navigation & Admin Button (End) */}
+                  <div className="justify-self-end flex items-center gap-4">
                     {/* Theme Toggle */}
-                    <button
-                      onClick={toggleTheme}
-                      className="p-2 rounded-full dark:bg-slate-800/50 bg-slate-200/50 hover:bg-slate-300/50 dark:hover:bg-slate-700/50 text-yellow-500 dark:text-slate-400 dark:hover:text-white transition-all duration-300 pointer-events-auto border dark:border-slate-700/30 border-slate-300"
-                      title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                    >
-                      {theme === 'dark' ? <FaSun className="text-lg" /> : <FaMoon className="text-lg text-slate-800" />}
-                    </button>
+                    {/* Theme Toggle Removed - Moved to FloatingToggle */}
 
-                    <ul className="flex items-center list-none gap-10 lg:gap-16">
+
+                    <ul className="flex items-center list-none gap-8 lg:gap-10">
                       <NavLink href="#about">About</NavLink>
                       <NavLink href="#contact">Contact</NavLink>
                     </ul>
@@ -244,50 +244,31 @@ const Header = () => {
                   </div>
                 </div>
 
-                {/* --- MOBILE DROPDOWN MENU --- */}
-                <AnimatePresence>
-                  {isMenuOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: 'easeInOut' }}
-                      className="w-full basis-full md:hidden"
-                    >
-                      {/* Navigation Links + Theme Toggle */}
-                      <div className="flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2 mt-2 mb-2">
-                        <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Home</a>
-                        <a href="#projects" onClick={(e) => handleNavClick(e, '#projects')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Project</a>
-                        <a href="/gallery" onClick={(e) => handleNavClick(e, '/gallery')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110 text-cyan-500">Gallery</a>
-                        <a href="#about" onClick={(e) => handleNavClick(e, '#about')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">About</a>
-                        <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="relative dark:text-white text-slate-700 font-[Rubik] font-bold text-base tracking-wider transition-transform duration-300 hover:scale-110">Contact</a>
-                        <button
-                          onClick={toggleTheme}
-                          className="p-2 rounded-full dark:bg-slate-800/50 bg-slate-200/50 hover:bg-slate-300/50 dark:hover:bg-slate-700/50 text-yellow-500 dark:text-slate-400 dark:hover:text-white transition-all duration-300 border dark:border-slate-700/30 border-slate-300"
-                          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                        >
-                          {theme === 'dark' ? <FaSun className="text-lg" /> : <FaMoon className="text-lg text-slate-800" />}
-                        </button>
-                      </div>
-
-                      {/* Admin Button - Separate Row */}
-                      <div className="flex justify-center mt-2 mb-2">
-                        <button
-                          onClick={handleAdminAccess}
-                          className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors duration-300"
-                        >
-                          <FaShieldAlt className={`text-lg ${isAuthenticated ? 'text-green-500' : 'currentColor'}`} />
-                          <span className="dark:text-slate-400 text-slate-600">Admin</span>
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </nav>
             </header>
           </motion.div>
         )}
-      </AnimatePresence >
+      </AnimatePresence>
+
+      {/* --- STAGGERED MENU (MOVED OUTSIDE HEADER FOR PROPER FIXED POSITIONING) --- */}
+      <StaggeredMenu
+        isOpen={isMenuOpen}
+        onMenuClose={() => setIsMenuOpen(false)}
+        items={[
+          { label: 'Home', link: '#home', onClick: (e) => handleNavClick(e, '#home') },
+          { label: 'Project', link: '#projects', onClick: (e) => handleNavClick(e, '#projects') },
+          { label: 'Gallery', link: '/gallery', onClick: (e) => handleNavClick(e, '/gallery') },
+          { label: 'About', link: '#about', onClick: (e) => handleNavClick(e, '#about') },
+          { label: 'Contact', link: '#contact', onClick: (e) => handleNavClick(e, '#contact') },
+        ]}
+        socialItems={[
+          { label: 'Admin', link: '#', onClick: (e) => { e.preventDefault(); handleAdminAccess(); } }
+        ]}
+        displaySocials={true}
+        displayItemNumbering={true}
+        colors={['#0891b2', '#06b6d4', '#155e75']} // Cyan palette
+        accentColor="#06b6d4"
+      />
 
       {/* Admin Login Modal */}
       <AdminLogin

@@ -24,18 +24,29 @@ dist-ssr
 *.sln
 *.sw?
 
+# OS System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
 # Environment variables
 .env
-.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.env.*
 !.env.example
 
 # Supabase
-supabase/config.toml
+supabase/.branches
 supabase/.temp
-supabase/*
+supabase/config.toml
 !supabase/migrations
-!supabase/config.toml
-# Ignore SQL scripts created during development
+!supabase/seed.sql
+
+# Ignore SQL scripts created during development (unless explicitly in migrations or seed)
 *.sql
 
 # Vite

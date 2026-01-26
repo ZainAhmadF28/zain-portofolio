@@ -6,6 +6,7 @@ import Squares from './components/Squares';
 import { NavbarProvider } from './contexts/NavbarContext';
 import { AdminProvider } from './contexts/AdminContext';
 import { useTheme } from './contexts/ThemeContext';
+import FloatingThemeToggle from './components/FloatingThemeToggle';
 
 // Pages
 import Home from './pages/Home';
@@ -41,6 +42,8 @@ function App() {
               <Route path="/gallery" element={<Gallery />} />
             </Routes>
           </AnimatePresence>
+
+          <FloatingThemeToggle />
         </div>
       </NavbarProvider>
     </AdminProvider>

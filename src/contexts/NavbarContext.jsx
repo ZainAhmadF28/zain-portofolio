@@ -12,12 +12,20 @@ export const useNavbar = () => {
 
 export const NavbarProvider = ({ children }) => {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const hideNavbar = () => setIsNavbarVisible(false);
   const showNavbar = () => setIsNavbarVisible(true);
 
+  const openMenu = () => setIsMenuOpen(true);
+  const closeMenu = () => setIsMenuOpen(false);
+  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+
   return (
-    <NavbarContext.Provider value={{ isNavbarVisible, hideNavbar, showNavbar }}>
+    <NavbarContext.Provider value={{
+      isNavbarVisible, hideNavbar, showNavbar,
+      isMenuOpen, openMenu, closeMenu, toggleMenu, setIsMenuOpen
+    }}>
       {children}
     </NavbarContext.Provider>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavbar } from '../contexts/NavbarContext';
-import { FaPlay, FaHeart, FaComment, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaPlay, FaHeart, FaComment, FaChevronLeft, FaChevronRight, FaImages, FaVideo } from 'react-icons/fa';
 import apiService from '../services/api';
 
 const Gallery = () => {
@@ -108,10 +108,10 @@ const Gallery = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.5 }}
-            className="relative z-10 px-4 md:px-8 max-w-7xl mx-auto pt-32 pb-20"
+            className="relative z-10 max-w-7xl mx-auto pt-24 md:pt-32 pb-20"
         >
-            <div className="text-center mb-16">
-                <h1 className="text-4xl md:text-6xl font-black font-moderniz tracking-tighter mb-4">
+            <div className="text-center mb-8 md:mb-16 px-4">
+                <h1 className="text-3xl md:text-6xl font-black font-moderniz tracking-tighter mb-4">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 dark:from-cyan-300 dark:to-blue-500 filter drop-shadow-lg">
                         ACTIVITY
                     </span>
@@ -129,54 +129,70 @@ const Gallery = () => {
                 </div>
             )}
 
-            {/* Masonry-like Grid using CSS Columns */}
+            {/* Masonry Layout (Modern & Responsive) */}
             {!isLoading && (
-                <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-                    {activities.map((activity) => (
-                        <motion.div
-                            key={activity.id}
-                            layoutId={`activity-${activity.id}`}
-                            className="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300"
-                            onClick={() => setSelectedActivity(activity)}
-                            whileHover={{ y: -5 }}
-                        >
-                            <div className="relative aspect-auto">
-                                {activity.type === 'video' ? (
-                                    <video
-                                        src={activity.src}
-                                        className="w-full h-full object-cover brightness-90"
-                                        muted
-                                        loop
-                                        autoPlay
-                                        playsInline
-                                    />
-                                ) : (
-                                    <img
-                                        src={activity.src}
-                                        alt={activity.title}
-                                        className="w-full h-full object-cover"
-                                        loading="lazy"
-                                        onError={(e) => e.target.src = 'https://via.placeholder.com/600x400?text=No+Image'}
-                                    />
-                                )}
-                                {/* Overlay on hover */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                                    <span className="text-cyan-300 text-xs font-bold uppercase tracking-wider mb-1">{activity.date}</span>
-                                    <h3 className="text-white font-bold text-lg leading-tight">{activity.title}</h3>
-                                </div>
-                            </div>
+                <div className="columns-2 md:columns-3 gap-3 space-y-3 md:gap-6 md:space-y-6 px-2 md:px-8">
+                    {activities.map((activity) => {
+                        const isVideo = activity.type === 'video';
+                        const isMulti = activity.media_urls && activity.media_urls.length > 1;
 
-                            {/* Card Content */}
-                            <div className="p-4 flex items-center justify-between border-t dark:border-slate-800 border-slate-100">
-                                <div className="flex items-center space-x-2 text-sm dark:text-slate-400 text-slate-500">
-                                    <FaHeart className="text-red-500" /> <span>{activity.likes || 0}</span>
+                        return (
+                            <motion.div
+                                key={activity.id}
+                                layoutId={`activity-${activity.id}`}
+                                className="break-inside-avoid relative group rounded-xl md:rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-slate-900 border dark:border-slate-800 border-slate-200 shadow-sm md:shadow-lg hover:shadow-xl transition-all duration-300"
+                                onClick={() => setSelectedActivity(activity)}
+                                whileHover={{ y: -5 }}
+                            >
+                                <div className="relative w-full">
+                                    {isVideo ? (
+                                        <video
+                                            src={activity.src}
+                                            className="w-full h-auto object-cover"
+                                            muted
+                                            loop
+                                            playsInline
+                                            autoPlay
+                                        />
+                                    ) : (
+                                        <img
+                                            src={activity.src}
+                                            alt={activity.title}
+                                            className="w-full h-auto object-cover"
+                                            loading="lazy"
+                                            onError={(e) => e.target.src = 'https://via.placeholder.com/600x400?text=No+Image'}
+                                        />
+                                    )}
+
+                                    {/* Mobile Indicators (Top Right) - kept minimal */}
+                                    <div className="absolute top-2 right-2 md:hidden text-white drop-shadow-md bg-black/30 backdrop-blur-sm rounded-full p-1.5 px-2 text-xs flex items-center">
+                                        {isVideo && <FaVideo />}
+                                        {!isVideo && isMulti && <FaImages />}
+                                    </div>
+
+                                    {/* Gradient Overlay (Desktop Hover) */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 hidden md:flex">
+                                        <span className="text-cyan-300 text-xs font-bold uppercase tracking-wider mb-1">{activity.date}</span>
+                                        <h3 className="text-white font-bold text-lg leading-tight">{activity.title}</h3>
+                                    </div>
                                 </div>
-                                <div className="text-xs font-mono dark:text-slate-500 text-slate-400">
-                                    View Details
+
+                                {/* Minimal info for Mobile (re-added but minimal) */}
+                                <div className="p-3 md:p-4 flex items-center justify-between md:border-t dark:border-slate-800 border-slate-100 bg-white dark:bg-slate-900">
+                                    <div className="flex items-center space-x-2 text-xs md:text-sm dark:text-slate-400 text-slate-500">
+                                        <FaHeart className="text-red-500" /> <span>{activity.likes || 0}</span>
+                                    </div>
+                                    {/* Title truncation for mobile context */}
+                                    <div className="md:hidden text-xs font-bold dark:text-slate-300 text-slate-700 truncate ml-2 flex-1 text-right">
+                                        {activity.title}
+                                    </div>
+                                    <div className="hidden md:block text-xs font-mono dark:text-slate-500 text-slate-400">
+                                        View Details
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                 </div>
             )}
 
@@ -194,28 +210,27 @@ const Gallery = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 bg-black/90 md:bg-black/80 backdrop-blur-md"
                         onClick={() => setSelectedActivity(null)}
                     >
                         <motion.div
                             layoutId={`activity-${selectedActivity.id}`}
-                            className="relative w-full max-w-5xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[85vh] md:h-[80vh]"
+                            className="relative w-full md:max-w-5xl bg-white dark:bg-slate-900 md:rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full md:h-[80vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Media Section (Left/Top) */}
-                            {/* Media Section (Left/Top) */}
-                            <div className="w-full md:w-[60%] bg-black flex items-center justify-center relative h-[40%] md:h-full group">
+                            <div className="w-full md:w-[60%] bg-black flex items-center justify-center relative h-[45%] md:h-full group">
                                 {(() => {
                                     const files = (selectedActivity.media_urls && selectedActivity.media_urls.length > 0)
                                         ? selectedActivity.media_urls
                                         : [selectedActivity.src];
 
                                     const currentFile = files[currentSlide] || files[0];
-                                    const isVideo = selectedActivity.type === 'video';
+                                    const isVideoFile = currentFile.match(/\.(mp4|webm|ogg)$/i) || (selectedActivity.type === 'video' && files.length === 1);
 
                                     return (
                                         <>
-                                            {isVideo ? (
+                                            {isVideoFile ? (
                                                 <video
                                                     src={currentFile}
                                                     controls
@@ -238,7 +253,7 @@ const Gallery = () => {
                                                             e.stopPropagation();
                                                             setCurrentSlide(prev => (prev === 0 ? files.length - 1 : prev - 1));
                                                         }}
-                                                        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
+                                                        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
                                                     >
                                                         <FaChevronLeft size={20} />
                                                     </button>
@@ -247,7 +262,7 @@ const Gallery = () => {
                                                             e.stopPropagation();
                                                             setCurrentSlide(prev => (prev === files.length - 1 ? 0 : prev + 1));
                                                         }}
-                                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
+                                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
                                                     >
                                                         <FaChevronRight size={20} />
                                                     </button>
@@ -271,14 +286,14 @@ const Gallery = () => {
                                     onClick={() => setSelectedActivity(null)}
                                     className="absolute top-4 left-4 md:hidden p-2 bg-black/50 text-white rounded-full z-10"
                                 >
-                                    Close
+                                    ✕
                                 </button>
                             </div>
 
                             {/* Info & Comments Section (Right/Bottom) */}
-                            <div className="w-full md:w-[40%] flex flex-col h-[60%] md:h-full border-l dark:border-slate-800 border-slate-200">
+                            <div className="w-full md:w-[40%] flex flex-col h-[55%] md:h-full border-l dark:border-slate-800 border-slate-200">
                                 {/* Header Info */}
-                                <div className="p-6 border-b dark:border-slate-800 border-slate-200 flex-shrink-0">
+                                <div className="p-4 md:p-6 border-b dark:border-slate-800 border-slate-200 flex-shrink-0 bg-white dark:bg-slate-900">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-xs font-bold px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400">
                                             {selectedActivity.date}
@@ -287,14 +302,14 @@ const Gallery = () => {
                                             ✕
                                         </button>
                                     </div>
-                                    <h2 className="text-xl font-bold dark:text-white text-slate-900 mb-2">{selectedActivity.title}</h2>
-                                    <p className="text-sm dark:text-slate-400 text-slate-600 leading-relaxed line-clamp-3">
+                                    <h2 className="text-lg md:text-xl font-bold dark:text-white text-slate-900 mb-1">{selectedActivity.title}</h2>
+                                    <p className="text-xs md:text-sm dark:text-slate-400 text-slate-600 leading-relaxed line-clamp-3">
                                         {selectedActivity.description}
                                     </p>
                                 </div>
 
                                 {/* Comments List (Scrollable) */}
-                                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50 dark:bg-slate-900/50">
+                                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-slate-50 dark:bg-slate-900/50">
                                     {loadingComments ? (
                                         <div className="flex justify-center py-4"><div className="animate-spin w-6 h-6 border-2 border-cyan-500 rounded-full border-t-transparent"></div></div>
                                     ) : comments.length > 0 ? (
@@ -322,8 +337,8 @@ const Gallery = () => {
                                 </div>
 
                                 {/* Interaction Area (Fixed Bottom) */}
-                                <div className="p-4 border-t dark:border-slate-800 border-slate-200 bg-white dark:bg-slate-900 flex-shrink-0">
-                                    <div className="flex items-center gap-4 mb-4">
+                                <div className="p-4 border-t dark:border-slate-800 border-slate-200 bg-white dark:bg-slate-900 flex-shrink-0 pb-safe">
+                                    <div className="flex items-center gap-4 mb-3">
                                         <button
                                             onClick={(e) => handleLike(e, selectedActivity)}
                                             className="flex items-center gap-2 text-slate-500 hover:text-red-500 transition-colors group"
